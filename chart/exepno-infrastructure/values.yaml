@@ -1,0 +1,305 @@
+image:
+  repository: gcr.io/bisees-public/exepno-infrastructure
+  tag: 1.0.0
+
+serviceAccount:
+  create: true
+  name: ""
+
+ingress:
+  grafana_host: ""
+  jenkins_host: ""
+  argocd_host: ""
+  airflow_host: ""
+  openmetadata_host: ""
+  kibana_host: ""
+  jira_host: ""
+  confluence_host: ""
+  gitea_host: ""
+  kubeshark_host: ""
+
+monitoring:
+  alertmanager:
+    alertmanagerSpec:
+      image:
+        registry: gcr.io
+        repository: bisees-public/exepno-infrastructure/alertmanager
+        tag: 1.0.0
+      storage:
+        storageClassName: standard-rwo
+        storage: 50Gi
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        image:
+          registry: gcr.io
+          repository: bisees-public/exepno-infrastructure/patch
+          tag: 1.0.0
+    image:
+      registry: gcr.io
+      repository: bisees-public/exepno-infrastructure/prometheus-operator
+      tag: 1.0.0
+    prometheusConfigReloader:
+      image:
+        registry: gcr.io
+        repository: bisees-public/exepno-infrastructure/prometheus-config-reloader
+        tag: 1.0.0
+  prometheus:
+    prometheusSpec:
+      image:
+        registry: gcr.io
+        repository: bisees-public/exepno-infrastructure/prometheus
+        tag: 1.0.0
+      storageSpec:
+        storageClassName: standard-rwo
+        storage: 50Gi
+  grafana:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/grafana
+      tag: 1.0.0
+    testFramework:
+      image: gcr.io/bisees-public/exepno-infrastructure/bats
+      tag: 1.0.0
+    downloadDashboardsImage:
+      repository: gcr.io/bisees-public/exepno-infrastructure/curl
+      tag: 1.0.0
+    initChownData:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/busybox
+        tag: 1.0.0
+    sidecar:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/k8s-sidecar
+        tag: 1.0.0
+    persistence:
+      storageClassName: standard-rwo
+      size: 10Gi
+  prometheusNodeExporter:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/node-exporter
+      tag: 1.0.0
+  kubeStateMetrics:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/kube-state-metrics
+      tag: 1.0.0
+
+jenkins:
+  controller:
+    image: gcr.io/bisees-public/exepno-infrastructure/jenkins
+    tag: 1.0.0
+    sidecars:
+      configAutoReload:
+        image: gcr.io/bisees-public/exepno-infrastructure/jenkins-k8s-sidecar:1.0.0
+  agent:
+    image: gcr.io/bisees-public/exepno-infrastructure/inbound-agent
+    tag: 1.0.0
+  helmtest:
+    bats:
+      image: gcr.io/bisees-public/exepno-infrastructure/jenkins-bats
+      tag: 1.0.0
+  serviceAccountAgent:
+    name: jenkins-workers
+  persistence:
+    storageClass: standard-rwo
+    size: 10Gi
+
+argocd:
+  global:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/argocd
+      tag: 1.0.0
+  dex:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/dex
+      tag: 1.0.0
+  redis:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/redis
+      tag: 1.0.0
+    metrics:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/redis-exporter
+        tag: 1.0.0
+  server:
+    extensions:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/argocd-extensions
+        tag: 1.0.0
+
+nfs:
+  image:
+    repository: gcr.io/bisees-public/exepno-infrastructure/nfs-provisioner
+    tag: 1.0.0
+  persistence:
+    storageClass: "standard-rwo"
+    size: 50Gi
+
+openmetadataDependencies:
+  secrets:
+    openmetadataAirflowPassword: ""
+    saEmail: ""
+    # github_username: ""
+    # github_token: ""
+  airflow:
+    airflow:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/ingestion
+        tag: 1.0.0
+    dags:
+      persistence:
+        size: 5Gi
+      gitSync:
+        image:
+          repository: gcr.io/bisees-public/exepno-infrastructure/git-sync
+          tag: 1.0.0
+    pgbouncer:
+      image:
+        repository: gcr.io/bisees-public/exepno-infrastructure/pgbouncer
+        tag: 1.0.0
+  mysql:
+    image:
+      registry: gcr.io
+      repository: bisees-public/exepno-infrastructure/om-mysql
+      tag: 1.0.0
+      pullPolicy: Always
+    auth:
+      rootPassword: ""
+    persistence:
+      storageClass: standard-rwo
+      size: 50Gi
+  elasticsearch:
+    image: gcr.io/bisees-public/exepno-infrastructure/om-elasticsearch
+    imageTag: 1.0.0
+    persistence:
+      storageClassName: standard-rwo
+      storage: 30Gi
+
+openmetadata:
+  image:
+    repository: gcr.io/bisees-public/exepno-infrastructure/openmetadata
+    tag: 1.0.0
+
+eck:
+  operator:
+    image:
+      repository: gcr.io/bisees-public/exepno-infrastructure/eck-operator
+      tag: 1.0.0
+  elasticsearch:
+    image: gcr.io/bisees-public/exepno-infrastructure/elasticsearch:1.0.0
+    persistence:
+      storageClassName: standard-rwo
+      storage: 50Gi
+  kibana:
+    image: gcr.io/bisees-public/exepno-infrastructure/kibana:1.0.0
+  metricbeat:
+    image: gcr.io/bisees-public/exepno-infrastructure/metricbeat:1.0.0
+  filebeat:
+    image: gcr.io/bisees-public/exepno-infrastructure/filebeat:1.0.0
+
+jira:
+  global:
+    postgresql:
+      auth:
+        password: ""
+        postgresPassword: ""
+      image:
+        registry: gcr.io
+        repository: bisees-public/exepno-infrastructure/postgresql
+        tag: 1.0.0
+      volumePermissions:
+        image:
+          registry: gcr.io
+          repository: bisees-public/exepno-infrastructure/bitnami-shell
+          tag: 1.0.0
+      metrics:
+        image:
+          registry: gcr.io
+          repository: bisees-public/exepno-infrastructure/postgres-exporter
+          tag: 1.0.0
+      persistence:
+        storageClass: standard-rwo
+        size: 10Gi
+  image:
+    repository: gcr.io/bisees-public/exepno-infrastructure/jira-software
+    tag: 1.0.0
+  nfsPermissionFixer:
+    imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
+    imageTag: 1.0.0
+  persistence:
+    storageClassName: standard-rwo
+    storage: 10Gi
+    sharedStorage: 10Gi
+
+confluence:
+  global:
+    postgresql:
+      auth:
+        password: ""
+        postgresPassword: ""
+      image:
+        registry: gcr.io
+        repository: bisees-public/exepno-infrastructure/postgresql
+        tag: 1.0.0
+      volumePermissions:
+        image:
+          registry: gcr.io
+          repository: bisees-public/exepno-infrastructure/bitnami-shell
+          tag: 1.0.0
+      metrics:
+        image:
+          registry: gcr.io
+          repository: bisees-public/exepno-infrastructure/postgres-exporter
+          tag: 1.0.0
+      persistence:
+        storageClass: standard-rwo
+        size: 10Gi
+  image:
+    repository: gcr.io/bisees-public/exepno-infrastructure/confluence
+    tag: 1.0.0
+  nfsPermissionFixer:
+    imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
+    imageTag: 1.0.0
+  persistence:
+    storageClassName: standard-rwo
+    storage: 10Gi
+    sharedStorage: 10Gi
+
+gitea:
+  image:
+    registry: gcr.io
+    repository: bisees-public/exepno-infrastructure/gitea
+    tag: 1.0.0
+  test:
+    image:
+      name: gcr.io/bisees-public/exepno-infrastructure/busybox
+      tag: 1.0.0
+  config:
+    APP_NAME: "Gitea: Git with a cup of tea"
+  admin:
+    username: "admin"
+    password: ""
+    email: "gitea@test.com"
+  postgresql:
+    password: ""
+    image:
+      registry: gcr.io
+      repository: bisees-public/exepno-infrastructure/postgresql
+      tag: 1.0.0
+    persistence:
+      storageClass: standard-rwo
+      size: 10Gi
+  memcached: 
+    image:
+      registry: gcr.io
+      repository: bisees-public/exepno-infrastructure/memcached
+      tag: 1.0.0
+  persistence:
+    storageClass: standard-rwo
+    size: 10Gi
+
+kubeshark:
+  approveddomains: 'gmail.com'
+  docker:
+    registry: gcr.io/bisees-public/exepno-infrastructure
+    tag: 1.0.0
+  storagelimit: 1Gi

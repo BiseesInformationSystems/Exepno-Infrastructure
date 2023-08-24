@@ -1,0 +1,898 @@
+x-google-marketplace:
+  schemaVersion: v2
+  applicationApiVersion: v1beta1
+  
+  # The published version is required and MUST match the tag of the deployer image
+  publishedVersion: "$TAG"
+  
+  publishedVersionMetadata:
+    releaseNote: >-
+      A first release.
+    
+    # (Optional) Feature, BugFix and Security
+    releaseTypes:
+      - Feature
+    
+    # Setting "recommended" to "true" indicates that users are encouraged to update as soon as possible.
+    recommended: false
+
+  deployerServiceAccount:
+    description: Required to deploy all Exepno services.
+    roles:
+      - type: ClusterRole
+        rulesType: CUSTOM
+        rules:
+          - apiGroups: ['rbac.authorization.k8s.io']
+            resources: ['clusterroles', 'clusterrolebindings']
+            verbs: ['*']
+          - apiGroups: ['']
+            resources: ['ServiceAccounts']
+            verbs: ['*']
+          - apiGroups: ['admissionregistration.k8s.io']
+            resources: ['mutatingwebhookconfigurations', 'validatingwebhookconfigurations']
+            verbs: ['*']
+
+  # Image declaration is required here.
+  images:
+    # main image
+    '':
+      properties:
+        image.repository:
+          type: REPO_WITH_REGISTRY
+        image.tag:
+          type: TAG
+        # kubeshark registry setting
+        kubeshark.docker.registry:
+          type: REPO_WITH_REGISTRY
+        kubeshark.docker.tag:
+          type: TAG
+
+    # monitoring images
+    alertmanager:
+      properties:
+        monitoring.alertmanager.alertmanagerSpec.image.registry:
+          type: REGISTRY
+        monitoring.alertmanager.alertmanagerSpec.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        monitoring.alertmanager.alertmanagerSpec.image.tag:
+          type: TAG
+    patch:
+      properties:
+        monitoring.prometheusOperator.admissionWebhooks.patch.image.registry:
+          type: REGISTRY
+        monitoring.prometheusOperator.admissionWebhooks.patch.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        monitoring.prometheusOperator.admissionWebhooks.patch.image.tag:
+          type: TAG
+    prometheus-operator:
+      properties:
+        monitoring.prometheusOperator.image.registry:
+          type: REGISTRY
+        monitoring.prometheusOperator.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        monitoring.prometheusOperator.image.tag:
+          type: TAG
+    prometheus-config-reloader:
+      properties:
+        monitoring.prometheusOperator.prometheusConfigReloader.image.registry:
+          type: REGISTRY
+        monitoring.prometheusOperator.prometheusConfigReloader.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        monitoring.prometheusOperator.prometheusConfigReloader.image.tag:
+          type: TAG
+    prometheus:
+      properties:
+        monitoring.prometheus.prometheusSpec.image.registry:
+          type: REGISTRY
+        monitoring.prometheus.prometheusSpec.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        monitoring.prometheus.prometheusSpec.image.tag:
+          type: TAG
+    # monitoring [grafana] images
+    grafana:
+      properties:
+        monitoring.grafana.image.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.grafana.image.tag:
+          type: TAG
+    bats:
+      properties:
+        monitoring.grafana.testFramework.image:
+          type: REPO_WITH_REGISTRY
+        monitoring.grafana.testFramework.tag:
+          type: TAG
+    curl:
+      properties:
+        monitoring.grafana.downloadDashboardsImage.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.grafana.downloadDashboardsImage.tag:
+          type: TAG
+    busybox:
+      properties:
+        monitoring.grafana.initChownData.image.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.grafana.initChownData.image.tag:
+          type: TAG
+        gitea.test.image.name:
+          type: REPO_WITH_REGISTRY
+        gitea.test.image.tag:
+          type: TAG
+    k8s-sidecar:
+      properties:
+        monitoring.grafana.sidecar.image.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.grafana.sidecar.image.tag:
+          type: TAG
+    # monitoring [node-exporter] images
+    node-exporter:
+      properties:
+        monitoring.prometheusNodeExporter.image.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.prometheusNodeExporter.image.tag:
+          type: TAG
+    # monitoring [kube-state-metrics] images
+    kube-state-metrics:
+      properties:
+        monitoring.kubeStateMetrics.image.repository:
+          type: REPO_WITH_REGISTRY
+        monitoring.kubeStateMetrics.image.tag:
+          type: TAG
+
+    # jenkins images
+    jenkins:
+      properties:
+        jenkins.controller.image:
+          type: REPO_WITH_REGISTRY
+        jenkins.controller.tag:
+          type: TAG
+    jenkins-k8s-sidecar:
+      properties:
+        jenkins.controller.sidecars.configAutoReload.image:
+          type: FULL
+    inbound-agent:
+      properties:
+        jenkins.agent.image:
+          type: REPO_WITH_REGISTRY
+        jenkins.agent.tag:
+          type: TAG
+    jenkins-bats:
+      properties:
+        jenkins.helmtest.bats.image:
+          type: REPO_WITH_REGISTRY
+        jenkins.helmtest.bats.tag:
+          type: TAG
+
+    # argo-cd images
+    argocd:
+      properties:
+        argocd.global.image.repository:
+          type: REPO_WITH_REGISTRY
+        argocd.global.image.tag:
+          type: TAG
+    dex:
+      properties:
+        argocd.dex.image.repository:
+          type: REPO_WITH_REGISTRY
+        argocd.dex.image.tag:
+          type: TAG
+    redis:
+      properties:
+        argocd.redis.image.repository:
+          type: REPO_WITH_REGISTRY
+        argocd.redis.image.tag:
+          type: TAG
+    redis-exporter:
+      properties:
+        argocd.redis.metrics.image.repository:
+          type: REPO_WITH_REGISTRY
+        argocd.redis.metrics.image.tag:
+          type: TAG
+    argocd-extensions:
+      properties:
+        argocd.server.extensions.image.repository:
+          type: REPO_WITH_REGISTRY
+        argocd.server.extensions.image.tag:
+          type: TAG
+
+    # nfs-server-provisioner images
+    nfs-provisioner:
+      properties:
+        nfs.image.repository:
+          type: REPO_WITH_REGISTRY
+        nfs.image.tag:
+          type: TAG
+
+    # openmetadata-dependencies images
+    ingestion:
+      properties:
+        openmetadataDependencies.airflow.airflow.image.repository:
+          type: REPO_WITH_REGISTRY
+        openmetadataDependencies.airflow.airflow.image.tag:
+          type: TAG
+    git-sync:
+      properties:
+        openmetadataDependencies.airflow.dags.gitSync.image.repository:
+          type: REPO_WITH_REGISTRY
+        openmetadataDependencies.airflow.dags.gitSync.image.tag:
+          type: TAG
+    pgbouncer:
+      properties:
+        openmetadataDependencies.airflow.pgbouncer.image.repository:
+          type: REPO_WITH_REGISTRY
+        openmetadataDependencies.airflow.pgbouncer.image.tag:
+          type: TAG
+    om-mysql:
+      properties:
+        openmetadataDependencies.mysql.image.registry:
+          type: REGISTRY
+        openmetadataDependencies.mysql.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        openmetadataDependencies.mysql.image.tag:
+          type: TAG
+    om-elasticsearch:
+      properties:
+        openmetadataDependencies.elasticsearch.image:
+          type: REPO_WITH_REGISTRY
+        openmetadataDependencies.elasticsearch.imageTag:
+          type: TAG
+
+    # openmetadata images
+    openmetadata:
+      properties:
+        openmetadata.image.repository:
+          type: REPO_WITH_REGISTRY
+        openmetadata.image.tag:
+          type: TAG
+
+    # elastic-stack [eck] images
+    eck-operator:
+      properties:
+        eck.operator.image.repository:
+          type: REPO_WITH_REGISTRY
+        eck.operator.image.tag:
+          type: TAG
+    elasticsearch:
+      properties:
+        eck.elasticsearch.image:
+          type: FULL
+    kibana:
+      properties:
+        eck.kibana.image:
+          type: FULL
+    metricbeat:
+      properties:
+        eck.metricbeat.image:
+          type: FULL
+    filebeat:
+      properties:
+        eck.filebeat.image:
+          type: FULL
+
+    # jira-postgresql and confluence-postgresql images
+    postgresql:
+      properties:
+        jira.global.postgresql.image.registry:
+          type: REGISTRY
+        jira.global.postgresql.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        jira.global.postgresql.image.tag:
+          type: TAG
+        confluence.global.postgresql.image.registry:
+          type: REGISTRY
+        confluence.global.postgresql.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        confluence.global.postgresql.image.tag:
+          type: TAG
+        gitea.postgresql.image.registry:
+          type: REGISTRY
+        gitea.postgresql.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        gitea.postgresql.image.tag:
+          type: TAG
+    bitnami-shell:
+      properties:
+        jira.global.postgresql.volumePermissions.image.registry:
+          type: REGISTRY
+        jira.global.postgresql.volumePermissions.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        jira.global.postgresql.volumePermissions.image.tag:
+          type: TAG
+        confluence.global.postgresql.volumePermissions.image.registry:
+          type: REGISTRY
+        confluence.global.postgresql.volumePermissions.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        confluence.global.postgresql.volumePermissions.image.tag:
+          type: TAG
+    postgres-exporter:
+      properties:
+        jira.global.postgresql.metrics.image.registry:
+          type: REGISTRY
+        jira.global.postgresql.metrics.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        jira.global.postgresql.metrics.image.tag:
+          type: TAG
+        confluence.global.postgresql.metrics.image.registry:
+          type: REGISTRY
+        confluence.global.postgresql.metrics.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        confluence.global.postgresql.metrics.image.tag:
+          type: TAG
+
+    # jira and confluence images
+    jira-software:
+      properties:
+        jira.image.repository:
+          type: REPO_WITH_REGISTRY
+        jira.image.tag:
+          type: TAG
+    confluence:
+      properties:
+        confluence.image.repository:
+          type: REPO_WITH_REGISTRY
+        confluence.image.tag:
+          type: TAG
+    alpine:
+      properties:
+        jira.nfsPermissionFixer.imageRepo:
+          type: REPO_WITH_REGISTRY
+        jira.nfsPermissionFixer.imageTag:
+          type: TAG
+        confluence.nfsPermissionFixer.imageRepo:
+          type: REPO_WITH_REGISTRY
+        confluence.nfsPermissionFixer.imageTag:
+          type: TAG
+
+    # gitea images
+    gitea:
+      properties:
+        gitea.image.registry:
+          type: REGISTRY
+        gitea.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        gitea.image.tag:
+          type: TAG
+    memcached:
+      properties:
+        gitea.memcached.image.registry:
+          type: REGISTRY
+        gitea.memcached.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        gitea.memcached.image.tag:
+          type: TAG
+
+    # kubeshark images
+    hub:
+      properties:
+        kubeshark.hub:
+          type: FULL
+    front:
+      properties:
+        kubeshark.front:
+          type: FULL
+    worker:
+      properties:
+        kubeshark.worker:
+          type: FULL
+
+properties:
+  name:
+    type: string
+    x-google-marketplace:
+      type: NAME
+  namespace:
+    type: string
+    x-google-marketplace:
+      type: NAMESPACE
+
+  # monitoring properties
+  ingress.grafana_host:
+    title: Grafana Ingress Hostname
+    description: Domain name to use for Grafana.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  monitoring.alertmanager.alertmanagerSpec.storage.storageClassName:
+    title: Storage Class for Alertmanager PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Alertmanager.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  monitoring.alertmanager.alertmanagerSpec.storage.storage:
+    title: Storage size for Alertmanager PersistentVolume
+    description: Storage size to accomodate for Alertmanager Persistent Volumes.
+    type: string
+    default: "50Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  monitoring.prometheus.prometheusSpec.storageSpec.storageClassName:
+    title: Storage Class for Prometheus PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Prometheus.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  monitoring.prometheus.prometheusSpec.storageSpec.storage:
+    title: Storage size for Prometheus PersistentVolume
+    description: Storage size to accomodate for Prometheus Persistent Volumes.
+    type: string
+    default: "50Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  monitoring.grafana.persistence.storageClassName:
+    title: Storage Class for Grafana PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Grafana.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  monitoring.grafana.persistence.size:
+    title: Storage size for Grafana PersistentVolume
+    description: Storage size to accomodate for Grafana Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # jenkins properties
+  ingress.jenkins_host:
+    title: Jenkins Ingress Hostname
+    description: Domain name to use for Jenkins.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  jenkins.controller.adminPassword:
+    title: Jenkins Admin user password
+    description: Password to use for Jenkins Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  jenkins.persistence.storageClass:
+    title: Storage Class for Jenkins PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Jenkins.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  jenkins.persistence.size:
+    title: Storage size for Jenkins PersistentVolume
+    description: Storage size to accomodate for Jenkins Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  jenkins.serviceAccountAgent.name:
+    title: Jenkins Agent ServiceAccount Name
+    description: ServiceAccount to use for Jenkins Workers.
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          Allows Jenkins workers to build and deploy apps
+          in the Kubernetes cluster.
+        roles:
+        - type: ClusterRole
+          rulesType: CUSTOM
+          rules:
+          - apiGroups: ['*']
+            resources: ['*']
+            verbs: ['get', 'list', 'create', 'update', 'delete', 'patch']
+
+  # argo-cd properties
+  ingress.argocd_host:
+    title: ArgoCD Ingress Hostname
+    description: Domain name to use for ArgoCD.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+
+  # nfs-server-provisioner properties
+  nfs.persistence.storageClass:
+    title: Storage Class for NFS Server PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for NFS Server.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  nfs.persistence.size:
+    title: Storage size for NFS Server PersistentVolume
+    description: Storage size to accomodate for NFS Server Persistent Volumes.
+    type: string
+    default: "50Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # openmetadata-dependencies properties
+  ingress.airflow_host:
+    title: Airflow Ingress Hostname
+    description: Domain name to use for Airflow.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  openmetadataDependencies.secrets.openmetadataAirflowPassword:
+    title: Airflow Admin user password
+    description: Password to use for Airflow Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: True
+  openmetadataDependencies.airflow.airflow.crawlOutputBucket:
+    title: Airflow Crawl Output Bucket
+    description: GCS Bucket to use for storing Airflow Dags output.
+    type: string
+  openmetadataDependencies.airflow.airflow.logsOutputBucket:
+    title: Airflow Logs Output Bucket
+    description: GCS Bucket to use for storing Airflow logs.
+    type: string
+  openmetadataDependencies.airflow.airflow.adminEmail:
+    title: Airflow Admin user Email
+    description: Email address to use for Airflow Admin user.
+    type: string
+    default: "airflow@test.com"
+    pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
+  openmetadataDependencies.airflow.airflow.adminFirstName:
+    title: Airflow Admin user first name
+    description: First name to use for Airflow Admin user.
+    type: string
+    default: Airflow
+  openmetadataDependencies.airflow.airflow.adminLastName:
+    title: Airflow Admin user last name
+    description: Last name to use for Airflow Admin user.
+    type: string
+    default: Admin
+  openmetadataDependencies.secrets.saEmail:
+    title: Airflow Service Account Email
+    description: Email address of the Airflow Service Account.
+    type: string
+    pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
+  # openmetadataDependencies.secrets.github_username:
+  #   title: GitHub username
+  #   description: Username of the GitHub account which contains the Airflow Dags repository.
+  #   type: string
+  # openmetadataDependencies.secrets.github_token:
+  #   title: GitHub Personal Access Token
+  #   description: Personal Access Token of the GitHub account which contains the Airflow Dags repository.
+  #   type: string
+  # openmetadataDependencies.airflow.dags.gitSync.repo:
+  #   title: GitHub Repository containing Airflow Dags
+  #   description: HTTPS URL of the GitHub Repository containing Airflow Dags.
+  #   type: string
+  openmetadataDependencies.mysql.auth.rootPassword:
+    title: MySQL [Airflow] Root user password
+    description: Password to use for MySQL [Airflow] Root user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  openmetadataDependencies.mysql.persistence.storageClass:
+    title: Storage Class for MySQL [Airflow] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for MySQL.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  openmetadataDependencies.mysql.persistence.size:
+    title: Storage size for MySQL [Airflow] PersistentVolume
+    description: Storage size to accomodate for MySQL Persistent Volumes.
+    type: string
+    default: "50Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  openmetadataDependencies.elasticsearch.persistence.storageClassName:
+    title: Storage Class for Elasticsearch [OpenMetadata] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  openmetadataDependencies.elasticsearch.persistence.storage:
+    title: Storage size for Elasticsearch [OpenMetadata] PersistentVolume
+    description: Storage size to accomodate for Elasticsearch Persistent Volumes.
+    type: string
+    default: "30Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  openmetadataDependencies.airflow.dags.persistence.size:
+    title: Storage size for Airflow Dags PersistentVolume
+    description: Storage size to accomodate for Airflow Dags Persistent Volumes.
+    type: string
+    default: "5Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # openmetadata properties
+  ingress.openmetadata_host:
+    title: OpenMetadata Ingress Hostname
+    description: Domain name to use for OpenMetadata.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+
+  # elastic-stack properties
+  ingress.kibana_host:
+    title: Kibana Ingress Hostname
+    description: Domain name to use for Kibana.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  eck.elasticsearch.count:
+    title: Elasticsearch Cluster Node Count
+    description: Number of nodes in Elasticsearch cluster.
+    type: integer
+    default: 2
+    enum:
+      - 1
+      - 2
+      - 3
+      - 5
+  eck.elasticsearch.persistence.storageClassName:
+    title: Storage Class for Elasticsearch PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  eck.elasticsearch.persistence.storage:
+    title: Storage size for Elasticsearch PersistentVolume
+    description: Storage size to accomodate for Elasticsearch Persistent Volumes.
+    type: string
+    default: "50Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # jira-postgresql properties
+  jira.global.postgresql.auth.password:
+    title: (Jira) PostgreSQL Jira user password
+    description: Password to use for PostgreSQL Jira user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  jira.global.postgresql.auth.postgresPassword:
+    title: (Jira) PostgreSQL root user password
+    description: Password to use for PostgreSQL root user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  jira.global.postgresql.persistence.storageClass:
+    title: Storage Class for PostgreSQL [Jira] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  jira.global.postgresql.persistence.size:
+    title: Storage size for PostgreSQL [Jira] PersistentVolume
+    description: Storage size to accomodate for PostgreSQL Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # jira properties
+  ingress.jira_host:
+    title: Jira Ingress Hostname
+    description: Domain name to use for Jira.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  jira.replicaCount:
+    title: Jira Replica Count
+    description: Number of replicas to deploy for Jira.
+    type: integer
+    default: 1
+    enum:
+      - 1
+      - 3
+      - 5
+  jira.persistence.storageClassName:
+    title: Storage Class for Jira PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Jira.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  jira.persistence.storage:
+    title: Storage size for Jira PersistentVolume
+    description: Storage size to accomodate for Jira Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  jira.persistence.sharedStorage:
+    title: Storage size for Jira Shared PersistentVolume
+    description: Storage size to accomodate for Jira Shared Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # confluence-postgresql properties
+  confluence.global.postgresql.auth.password:
+    title: PostgreSQL [Confluence] Confluence user password
+    description: Password to use for PostgreSQL Confluence user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  confluence.global.postgresql.auth.postgresPassword:
+    title: PostgreSQL [Confluence] root user password
+    description: Password to use for PostgreSQL root user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  confluence.global.postgresql.persistence.storageClass:
+    title: Storage Class for PostgreSQL [Confluence] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  confluence.global.postgresql.persistence.size:
+    title: Storage size for PostgreSQL [Confluence] PersistentVolume
+    description: Storage size to accomodate for PostgreSQL Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # confluence properties
+  ingress.confluence_host:
+    title: Confluence Ingress Hostname
+    description: Domain name to use for Confluence.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  confluence.replicaCount:
+    title: Confluence Replica Count
+    description: Number of replicas to deploy for Confluence.
+    type: integer
+    default: 1
+    enum:
+      - 1
+      - 3
+      - 5
+  confluence.persistence.storageClassName:
+    title: Storage Class for Confluence PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Confluence.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  confluence.persistence.storage:
+    title: Storage size for Confluence PersistentVolume
+    description: Storage size to accomodate for Confluence Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  confluence.persistence.sharedStorage:
+    title: Storage size for Confluence Shared PersistentVolume
+    description: Storage size to accomodate for Confluence Shared Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # gitea properties
+  ingress.gitea_host:
+    title: Gitea Ingress Hostname
+    description: Domain name to use for Gitea.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  gitea.config.APP_NAME:
+    title: Gitea Display Name
+    description: This name will displayed on Gitea homepage.
+    type: string
+    default: "Bisees Gitea: Git with a cup of tea"
+  gitea.admin.username:
+    title: Gitea Admin Username
+    description: Username to use for Gitea Admin user. Note that "admin" can not be used as username.
+    type: string
+    default: gitea_admin
+    pattern: '^(?!admin$)\w*'
+  gitea.admin.password:
+    title: Gitea Admin User Password
+    description: Password to use for Gitea Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  gitea.admin.email:
+    title: Gitea Admin User Email
+    description: Email address to use for Gitea Admin user.
+    type: string
+    default: "gitea@test.com"
+    pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
+  gitea.postgresql.password:
+    title: (Gitea) PostgreSQL Gitea user password
+    description: Password to use for PostgreSQL Gitea user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  gitea.postgresql.persistence.storageClass:
+    title: Storage Class for PostgreSQL [Gitea] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  gitea.postgresql.persistence.size:
+    title: Storage size for PostgreSQL [Gitea] PersistentVolume
+    description: Storage size to accomodate for PostgreSQL Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  gitea.persistence.storageClass:
+    title: Storage Class for Gitea PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Gitea.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  gitea.persistence.size:
+    title: Storage size for Gitea PersistentVolume
+    description: Storage size to accomodate for Gitea Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # kubeshark properties
+  ingress.kubeshark_host:
+    title: Kubeshark Ingress Hostname
+    description: Domain name to use for Kubeshark.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  kubeshark.license:
+    title: Kubeshark License
+    description: License to use for Kubeshark.
+    type: string
+    x-google-marketplace:
+      type: MASKED_FIELD
+  kubeshark.approveddomains:
+    title: Kubeshark Approved Domains (comma-seperated list)
+    description: Only Email IDs having these domains will be able to access Kubeshark UI. Specify domains as a comma-seperated list.
+    type: string
+    default: "gmail.com,outlook.com"
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+  kubeshark.storagelimit:
+    title: Storage size for Kubeshark PersistentVolume
+    description: Storage size to accomodate for Kubeshark Persistent Volumes.
+    type: string
+    default: "1Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+required:
+- name
+- namespace
+- ingress.grafana_host
+- ingress.jenkins_host
+- ingress.argocd_host
+- ingress.airflow_host
+- openmetadataDependencies.airflow.airflow.crawlOutputBucket
+- openmetadataDependencies.airflow.airflow.logsOutputBucket
+- openmetadataDependencies.secrets.saEmail
+# - openmetadataDependencies.secrets.github_username
+# - openmetadataDependencies.secrets.github_token
+# - openmetadataDependencies.secrets.dagsRepo
+- ingress.openmetadata_host
+- ingress.kibana_host
+- ingress.jira_host
+- ingress.confluence_host
+- ingress.gitea_host
+- ingress.kubeshark_host
+- kubeshark.license

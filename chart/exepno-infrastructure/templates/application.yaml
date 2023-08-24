@@ -1,0 +1,30 @@
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: "{{ .Release.Name }}"
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app.kubernetes.io/name: {{ include "exepno-infrastructure.name" . }}
+  annotations:
+    marketplace.cloud.google.com/deploy-info: '{"partner_id": "0014M00001ppeE1QAI", "product_id": "exepno-infrastructure", "partner_name": "Bisees Information Systems"}'
+spec:
+  descriptor:
+    type: Exepno Infrastructure
+    version: '1.0.0'
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "exepno-infrastructure.name" . }}
+  addOwnerRef: true
+  componentKinds:
+  - group: v1
+    kind: Secret
+  - group: apps
+    kind: Deployment
+  - group: batch
+    kind: Job
+  - group: rbac.authorization.k8s.io
+    kind: ClusterRoleBinding
+  - group: rbac.authorization.k8s.io
+    kind: ClusterRole
+  - group: rbac.authorization.k8s.io
+    kind: RoleBinding

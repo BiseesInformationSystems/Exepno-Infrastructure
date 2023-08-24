@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "exepno-infrastructure.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "exepno-infrastructure.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "exepno-infrastructure.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "exepno-infrastructure.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "exepno-infrastructure.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - name: values
+          secret:
+            secretName: {{ include "exepno-infrastructure.fullname" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CRB_NAME
+              value: {{ include "exepno-infrastructure.fullname" . }}
+            - name: SA_NAME
+              value: {{ include "exepno-infrastructure.serviceAccountName" . }}
+          volumeMounts:
+            - mountPath: /values
+              name: values
+          startupProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - cat /apps/finished
+            initialDelaySeconds: 900
+            failureThreshold: 30
+            periodSeconds: 30
