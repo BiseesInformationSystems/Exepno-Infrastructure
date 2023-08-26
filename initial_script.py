@@ -267,7 +267,7 @@ def install_pulumi_cli():
       print("Please manually install Pulumi CLI, place it in $PATH and then rerun this tool.\nExiting...")
       exit(1)
 
-def create_cluster(args: Namespace):
+def create_infrastructure(args: Namespace):
   # Set GCP Zone
   gcp_zone = f'{args.region}-a'
 
@@ -340,6 +340,11 @@ def create_cluster(args: Namespace):
       ),
       network_policy_config=gcp.container.ClusterAddonsConfigNetworkPolicyConfigArgs(
         disabled=False
+      ),
+    ),
+    monitoring_config=gcp.container.ClusterMonitoringConfigArgs(
+      managed_prometheus=gcp.container.ClusterMonitoringConfigManagedPrometheusArgs(
+        enabled=False
       )
     ),
     release_channel=gcp.container.ClusterReleaseChannelArgs(
@@ -635,7 +640,7 @@ def main():
   stack = create_or_select_stack(
     stack_name, 
     project_name=args.project_id,
-    program=create_cluster(args),
+    program=create_infrastructure(args),
     opts=LocalWorkspaceOptions(
       env_vars={
         "PULUMI_ACCESS_TOKEN": "pul-6cdfbaeeccc6ebc0f7a4308bf2cf612b77c02e8f"
