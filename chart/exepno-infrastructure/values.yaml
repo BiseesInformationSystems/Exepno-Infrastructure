@@ -116,7 +116,7 @@ argocd:
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/redis
       tag: 1.0.0
-    metrics:
+    exporter:
       image:
         repository: gcr.io/bisees-public/exepno-infrastructure/redis-exporter
         tag: 1.0.0
@@ -219,9 +219,9 @@ jira:
       persistence:
         storageClass: standard-rwo
         size: 10Gi
-  image:
-    repository: gcr.io/bisees-public/exepno-infrastructure/jira-software
-    tag: 1.0.0
+  # image:
+  #   repository: gcr.io/bisees-public/exepno-infrastructure/jira-software
+  #   tag: 1.0.0
   nfsPermissionFixer:
     imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
     imageTag: 1.0.0
@@ -253,9 +253,9 @@ confluence:
       persistence:
         storageClass: standard-rwo
         size: 10Gi
-  image:
-    repository: gcr.io/bisees-public/exepno-infrastructure/confluence
-    tag: 1.0.0
+  # image:
+  #   repository: gcr.io/bisees-public/exepno-infrastructure/confluence
+  #   tag: 1.0.0
   nfsPermissionFixer:
     imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
     imageTag: 1.0.0

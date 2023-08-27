@@ -183,9 +183,9 @@ x-google-marketplace:
           type: TAG
     redis-exporter:
       properties:
-        argocd.redis.metrics.image.repository:
+        argocd.redis.exporter.image.repository:
           type: REPO_WITH_REGISTRY
-        argocd.redis.metrics.image.tag:
+        argocd.redis.exporter.image.tag:
           type: TAG
     argocd-extensions:
       properties:
@@ -319,18 +319,18 @@ x-google-marketplace:
           type: TAG
 
     # jira and confluence images
-    jira-software:
-      properties:
-        jira.image.repository:
-          type: REPO_WITH_REGISTRY
-        jira.image.tag:
-          type: TAG
-    confluence:
-      properties:
-        confluence.image.repository:
-          type: REPO_WITH_REGISTRY
-        confluence.image.tag:
-          type: TAG
+    # jira-software:
+    #   properties:
+    #     jira.image.repository:
+    #       type: REPO_WITH_REGISTRY
+    #     jira.image.tag:
+    #       type: TAG
+    # confluence:
+    #   properties:
+    #     confluence.image.repository:
+    #       type: REPO_WITH_REGISTRY
+    #     confluence.image.tag:
+    #       type: TAG
     alpine:
       properties:
         jira.nfsPermissionFixer.imageRepo:
