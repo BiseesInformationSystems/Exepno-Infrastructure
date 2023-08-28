@@ -1,8 +1,7 @@
-import os
+from os.path import abspath
 from argparse import ArgumentParser, Namespace
-from string import ascii_lowercase
-from random import choices
-from subprocess import run, PIPE
+from re import match
+from subprocess import run
 import pulumi_gcp as gcp
 from pulumi.automation import create_or_select_stack, fully_qualified_stack_name, LocalWorkspaceOptions, ProjectSettings, ConfigValue
 from pulumi import ResourceOptions, Output, ComponentResource, export
@@ -88,7 +87,7 @@ class K8sInfra(ComponentResource):
                 "loadBalancerIP": args.static_ip
               },
               "ingressClassResource": {
-                "default": "true"
+                "default": True
               },
               "lifecycle": {
                 "preStop": {
@@ -103,9 +102,9 @@ class K8sInfra(ComponentResource):
               },
               "terminationGracePeriodSeconds": 600,
               "metrics": {
-                "enabled": "true",
+                "enabled": True,
                 "serviceMonitor": {
-                  "enabled": "false",
+                  "enabled": False,
                   "namespace": args.namespace,
                   "additionalLabels": {
                     "release": "prometheus"
@@ -114,7 +113,7 @@ class K8sInfra(ComponentResource):
               }
             },
             "defaultBackend": {
-              "enabled": "true"
+              "enabled": True
             }
             # "tcp": {
             #   "5432": f'{postgresql.status.namespace}/{postgresql.status.name}:5432'
@@ -148,7 +147,7 @@ class K8sInfra(ComponentResource):
           values={
             "prometheus": {
               "servicemonitor": {
-                "enabled": "false",
+                "enabled": False,
                 "namespace": args.namespace,
                 "labels": {
                   "release": "prometheus"
@@ -219,64 +218,111 @@ spec:
         )
       )
 
-def install_pulumi_cli():
-  try:
-    # check if Pulumi is installed
-    output = run(["pulumi", "version"], check=True, capture_output=True)
-    print("Pulumi Version:", output.stdout.decode())
+# def install_pulumi_cli():
+#   try:
+#     # check if Pulumi is installed
+#     output = run(["pulumi", "version"], check=True, capture_output=True)
+#     print("Pulumi Version:", output.stdout.decode())
 
-  except Exception as e:
-    print("Error occured:", e)
-    install = input("Pulumi CLI is not installed.\nWould you like to me to install it for you? [yes|no]: ")
-    if install == "yes" :
-      os_name = os.name
-      print("Installing Pulumi CLI...")
-      command = r'powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString(\'https://get.pulumi.com/install.ps1\'))" && SET "PATH=%PATH%;%USERPROFILE%\\\.pulumi\\bin"'
-      if os_name == "nt":
-        # installed = run([
-        #   "@%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe",
-        #   "-NoProfile",
-        #   "-InputFormat",
-        #   "None",
-        #   "-ExecutionPolicy",
-        #   "Bypass",
-        #   "-Command",
-        #   "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString(\'https://get.pulumi.com/install.ps1\'))\" && SET \"PATH=%PATH%;%USERPROFILE%\.pulumi\bin\""
-        #   ],
-        #   check=True,
-        #   capture_output=True,
-        #   executable=os.path.join("C:\\", "Windows", "system32", "cmd.exe")
-        # )
-        installed = run(['cmd', '/k', command], shell=True, check=True, capture_output=False, text=True, stdout=PIPE, stderr=PIPE)
-        print(installed.stdout.decode())
-      elif os_name == "posix":
-        installed = run([
-          "curl",
-          "-fsSL",
-          "https://get.pulumi.com",
-          "|",
-          "sh",
-          "--silent"
-          ], check=True, capture_output=True)
-        print(installed.stdout.decode())
-      else:
-        print("Unsupported Operating System. ")
-        print("Please install it manually, place it in $PATH and then rerun this tool.\nExiting...")
-        exit(1)
-    else:
-      print("Please manually install Pulumi CLI, place it in $PATH and then rerun this tool.\nExiting...")
-      exit(1)
+#   except Exception as e:
+#     print("Error occured:", e)
+#     install = input("Pulumi CLI is not installed.\nWould you like to me to install it for you? [yes|no]: ")
+#     if install == "yes" :
+#       os_name = os.name
+#       print("Installing Pulumi CLI...")
+#       command = r'powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString(\'https://get.pulumi.com/install.ps1\'))" && SET "PATH=%PATH%;%USERPROFILE%\\\.pulumi\\bin"'
+#       if os_name == "nt":
+#         installed = run(['cmd', '/k', command], shell=True, check=True, capture_output=False, text=True, stdout=PIPE, stderr=PIPE)
+#         print(installed.stdout.decode())
+#       elif os_name == "posix":
+#         installed = run([
+#           "curl",
+#           "-fsSL",
+#           "https://get.pulumi.com",
+#           "|",
+#           "sh",
+#           "--silent"
+#           ], check=True, capture_output=True)
+#         print(installed.stdout.decode())
+#       else:
+#         print("Unsupported Operating System. ")
+#         print("Please install it manually, place it in $PATH and then rerun this tool.\nExiting...")
+#         exit(1)
+#     else:
+#       print("Please manually install Pulumi CLI, place it in $PATH and then rerun this tool.\nExiting...")
+#       exit(1)
 
 def create_infrastructure(args: Namespace):
   # Set GCP Zone
   gcp_zone = f'{args.region}-a'
+
+  # Enable the required APIs
+  enable_compute = gcp.projects.Service(
+    "compute",
+    service="compute.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_artifactregistry = gcp.projects.Service(
+    "artifactregistry",
+    service="artifactregistry.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_dns = gcp.projects.Service(
+    "dns",
+    service="dns.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_cloudresourcemanager = gcp.projects.Service(
+    "cloudresourcemanager",
+    service="cloudresourcemanager.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_storage_component = gcp.projects.Service(
+    "storage_component",
+    service="storage-component.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_storage = gcp.projects.Service(
+    "storage",
+    service="storage.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_containerregistry = gcp.projects.Service(
+    "containerregistry",
+    service="containerregistry.googleapis.com",
+    project=args.project_id
+  )
+
+  enable_container = gcp.projects.Service(
+    "container",
+    service="container.googleapis.com",
+    project=args.project_id
+  )
 
   # Create a new network
   gke_network = gcp.compute.Network(
     f'{args.cluster_name}-vpc',
     name=f'{args.cluster_name}-vpc',
     auto_create_subnetworks=False,
-    description="A virtual network for our GKE cluster"
+    description="A virtual network for our GKE cluster",
+    opts=ResourceOptions(
+      depends_on=[
+        enable_compute,
+        enable_artifactregistry,
+        enable_dns,
+        enable_cloudresourcemanager,
+        enable_storage_component,
+        enable_storage,
+        enable_containerregistry,
+        enable_container
+      ]
+    )
   )
 
   # Create a subnet in the new network
@@ -337,10 +383,7 @@ def create_infrastructure(args: Namespace):
       ),
       gce_persistent_disk_csi_driver_config=gcp.container.ClusterAddonsConfigGcePersistentDiskCsiDriverConfigArgs(
         enabled=True
-      ),
-      network_policy_config=gcp.container.ClusterAddonsConfigNetworkPolicyConfigArgs(
-        disabled=False
-      ),
+      )
     ),
     monitoring_config=gcp.container.ClusterMonitoringConfigArgs(
       managed_prometheus=gcp.container.ClusterMonitoringConfigManagedPrometheusArgs(
@@ -354,7 +397,7 @@ def create_infrastructure(args: Namespace):
       workload_pool=f"{args.project_id}.svc.id.goog"
     ),
     network_policy=gcp.container.ClusterNetworkPolicyArgs(
-      enabled=True
+      enabled=False
     ),
     datapath_provider="ADVANCED_DATAPATH",
     opts=ResourceOptions(
@@ -431,53 +474,100 @@ def create_infrastructure(args: Namespace):
     gke_cluster.master_auth.cluster_ca_certificate,
     gke_cluster.endpoint,
     gke_cluster.name).apply(lambda l:
-    f"""apiVersion: v1
-  clusters:
-  - cluster:
-      certificate-authority-data: {l[0]}
-      server: https://{l[1]}
-    name: {l[2]}
-  contexts:
-  - context:
-      cluster: {l[2]}
-      user: {l[2]}
-    name: {l[2]}
-  current-context: {l[2]}
-  kind: Config
-  preferences: {{}}
-  users:
-  - name: {l[2]}
-    user:
-      exec:
-        apiVersion: client.authentication.k8s.io/v1beta1
-        command: gke-gcloud-auth-plugin.exe
-        installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
-          https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
-        interactiveMode: IfAvailable
-        provideClusterInfo: true
-  """
+    f"""
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: {l[0]}
+    server: https://{l[1]}
+  name: {l[2]}
+contexts:
+- context:
+    cluster: {l[2]}
+    user: {l[2]}
+  name: {l[2]}
+current-context: {l[2]}
+kind: Config
+preferences: {{}}
+users:
+- name: {l[2]}
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: gke-gcloud-auth-plugin.exe
+      installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
+        https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
+      interactiveMode: IfAvailable
+      provideClusterInfo: true
+"""
   )
 
   # GCP Bucket for Airflow Dags Output
   crawl_output_bucket = gcp.storage.Bucket(
     "airflowOutputBucket",
-    name=f"exepno-infrastructure-airflow-output-{''.join(choices(ascii_lowercase, k=5))}",
+    name=f"exepno-infrastructure-airflow-output-{args.project_id}-{args.name}",
     location=args.region,
     storage_class="STANDARD"
   )
 
+  # GCP Bucket for Airflow Logs Output
   airflow_logs_bucket = gcp.storage.Bucket(
     "airflowLogsBucket",
-    name=f"exepno-infrastructure-airflow-logs-{''.join(choices(ascii_lowercase, k=5))}",
+    name=f"exepno-infrastructure-airflow-logs-{args.project_id}-{args.name}",
     location=args.region,
     storage_class="STANDARD"
   )
 
+  # Static IP Address for Ingress Nginx Controller
   static = gcp.compute.Address(
     "ingressStaticIP",
     name="exepno-infrastructure-ingress-nginx-controller",
     region=args.region
   )
+
+  # Ask whether to create CloudDNS Zone
+  dns_answer = input("Do you want to create a CloudDNS Zone to manage your Domain? [yes/no]: ")
+  if dns_answer == "yes":
+    found = False
+    while not found:
+      domain = input("Enter your domain name: ")
+      matched = match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', domain)
+      if matched:
+        domain = matched.string
+        found = True
+      else:
+        domain = None
+        print("Incorrect value for domain. Please try again.")
+
+    dns_zone = example_zone = gcp.dns.ManagedZone(
+      f"{args.project_id}-{domain}",
+      description=f"Managed DNS Zone for {domain}",
+      dns_name=f"{domain}."
+    )
+
+    domains = [
+      "Grafana",
+      "Jenkins",
+      "ArgoCD",
+      "Airflow",
+      "OpenMetadata",
+      "Kibana",
+      "Jira",
+      "Confluence",
+      "Git",
+      "Kubeshark"
+    ]
+
+    for subdomain in domains:
+      gcp.dns.RecordSet(
+        f"{subdomain}.{domain}.",
+        name=dns_zone.dns_name.apply(lambda dns_name: f"{subdomain.lower()}.{dns_name}"),
+        managed_zone=dns_zone.name,
+        type="A",
+        ttl=60,
+        rrdatas=[static.address])
+  else:
+    print("Skipping DNS Automation.")
 
   # Create CloudNAT configuration to allow internet access to worker nodes
   router = gcp.compute.Router(
@@ -597,11 +687,14 @@ def create_infrastructure(args: Namespace):
     )
   )
 
-  export("ClusterName", gke_cluster.name)
-  export("AirflowOutputBucketURL", crawl_output_bucket.url)
-  export("AirflowLogsBucketURL", airflow_logs_bucket.url)
-  export("IngressControllerPublicIP", static.address)
-  export("AirflowServiceAccountId", airflow_sa.id)
+  export("GKE Cluster Name", gke_cluster.name)
+  export("Airflow Output Bucket URL", crawl_output_bucket.url)
+  export("Airflow Logs Bucket URL", airflow_logs_bucket.url)
+  export("Ingress Controller Public IP", static.address)
+  export("Airflow ServiceAccount Id", airflow_sa.id)
+  for subdomain in domains:
+    full_domain = dns_zone.dns_name.apply(lambda dns_name: f"{subdomain.lower()}.{dns_name}")
+    export(f"{subdomain} Domain", full_domain)
 
 def main():
   # Build Parser
@@ -633,14 +726,14 @@ def main():
   args = global_parser.parse_args()
 
   # Install Pulumi CLI if not installed
-  install_pulumi_cli()
+  # install_pulumi_cli()
 
   print("Initializing Stack...")
   stack_name = fully_qualified_stack_name("bisees", args.project_id, args.name)
   stack = create_or_select_stack(
     stack_name, 
     project_name=args.project_id,
-    program=create_infrastructure(args),
+    program=lambda: create_infrastructure(args),
     opts=LocalWorkspaceOptions(
       env_vars={
         "PULUMI_ACCESS_TOKEN": "pul-6cdfbaeeccc6ebc0f7a4308bf2cf612b77c02e8f"
@@ -665,12 +758,27 @@ def main():
   stack.set_config("gcp:project", ConfigValue(value="bisees-public"))
   stack.set_config("gcp:region", ConfigValue(value="us-central1"))
   stack.set_config("gcp:zone", ConfigValue(value="us-central1-a"))
-  stack.set_config("gcp:credentials", ConfigValue(value=os.path.abspath("credentials.json"), secret=True))
+  stack.set_config("gcp:credentials", ConfigValue(value=abspath("credentials.json"), secret=True))
+
+  result = run(["helm", "repo", "up"], check=True, capture_output=True, text=True)
+  if result.returncode != 0:
+    print(result.stderr)
+    exit(1)
 
   if args.func == "create":
-    stack.up(on_output=print)
+    print("Creating Exepno Infrastructure...")
+    res = stack.up()
+    print("Update Result:", res.summary.result)
+    print("Update Message:", res.summary.message)
+    print("Update Config:", res.summary.config)
+    print("Update Deployment:", res.summary.Deployment)
+    print("Update Environment:", res.summary.environment)
+    print("Update Kind:", res.summary.kind)
+    print("Outputs:", res.outputs)
   elif args.func == "delete":
-    stack.destroy(on_output=print)
+    print("Deleting Exepno Infrastructure...")
+    stack.destroy()
+    exit(0)
   else:
     print("Incorrect command.")
     exit(1)
