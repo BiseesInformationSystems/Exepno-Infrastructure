@@ -1,3 +1,4 @@
+from os import name as osname
 from os.path import abspath
 from argparse import ArgumentParser, Namespace
 from re import match
@@ -469,11 +470,17 @@ def create_infrastructure(args: Namespace):
     )
   )
 
+  if osname == "posix":
+    exe_type = ""
+  else:
+    exe_type = ".exe"
+
   # Build a Kubeconfig to access the cluster
   cluster_kubeconfig = Output.all(
     gke_cluster.master_auth.cluster_ca_certificate,
     gke_cluster.endpoint,
-    gke_cluster.name).apply(lambda l:
+    gke_cluster.name,
+    exe_type).apply(lambda l:
     f"""
 apiVersion: v1
 clusters:
@@ -494,7 +501,7 @@ users:
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1beta1
-      command: gke-gcloud-auth-plugin.exe
+      command: gke-gcloud-auth-plugin{l[3]}
       installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
         https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
       interactiveMode: IfAvailable
@@ -539,7 +546,7 @@ users:
         domain = None
         print("Incorrect value for domain. Please try again.")
 
-    dns_zone = example_zone = gcp.dns.ManagedZone(
+    dns_zone = gcp.dns.ManagedZone(
       f'{args.project_id}-{domain.replace(".", "-")}',
       description=f"Managed DNS Zone for {domain}",
       dns_name=f"{domain}.",
@@ -637,7 +644,6 @@ users:
       airflow_logs_bucket=airflow_logs_bucket.name,
       namespace=args.namespace,
       letsencrypt_email=args.letsencrypt_email
-      # airflow_sa_email=f'exepno-infrastructure-airflow-sa@{args.project_id}.iam.gserviceaccount.com'
     ),
     opts=ResourceOptions(
       depends_on=[gke_cluster, gke_nodepool],
