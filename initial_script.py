@@ -554,7 +554,7 @@ users:
       "Kibana",
       "Jira",
       "Confluence",
-      "Git",
+      "Gitea",
       "Kubeshark"
     ]
 
@@ -736,7 +736,7 @@ def main():
     program=lambda: create_infrastructure(args),
     opts=LocalWorkspaceOptions(
       env_vars={
-        "PULUMI_ACCESS_TOKEN": "pul-6cdfbaeeccc6ebc0f7a4308bf2cf612b77c02e8f"
+        "PULUMI_ACCESS_TOKEN": "pul-deacb40d41cb450344bcc9f80aa5faba782e7f16"
       },
       project_settings=ProjectSettings(
         name=args.project_id,
