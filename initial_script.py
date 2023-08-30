@@ -540,9 +540,10 @@ users:
         print("Incorrect value for domain. Please try again.")
 
     dns_zone = example_zone = gcp.dns.ManagedZone(
-      f"{args.project_id}-{domain}",
+      f'{args.project_id}-{domain.replace(".", "-")}',
       description=f"Managed DNS Zone for {domain}",
-      dns_name=f"{domain}."
+      dns_name=f"{domain}.",
+      name=f'{args.project_id}-{domain.replace(".", "-")}'
     )
 
     domains = [
