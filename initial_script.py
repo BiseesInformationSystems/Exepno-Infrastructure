@@ -758,7 +758,7 @@ def main():
   stack.set_config("gcp:project", ConfigValue(value="bisees-public"))
   stack.set_config("gcp:region", ConfigValue(value="us-central1"))
   stack.set_config("gcp:zone", ConfigValue(value="us-central1-a"))
-  stack.set_config("gcp:credentials", ConfigValue(value=abspath("credentials.json"), secret=True))
+  stack.set_config("gcp:credentials", ConfigValue(value=abspath(args.sa_file), secret=True))
 
   result = run(["helm", "repo", "up"], check=True, capture_output=True, text=True)
   if result.returncode != 0:
