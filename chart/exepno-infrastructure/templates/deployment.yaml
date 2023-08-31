@@ -21,6 +21,9 @@ spec:
         - name: values
           secret:
             secretName: {{ include "exepno-infrastructure.fullname" . }}
+        - name: ubbagent-config
+          configMap:
+            name: {{ include "exepno-infrastructure.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -46,3 +49,23 @@ spec:
             initialDelaySeconds: 900
             failureThreshold: 30
             periodSeconds: 30
+        - name: ubbagent
+          image: {{ .Values.ubbagent.image }}
+          env:
+          - name: AGENT_CONFIG_FILE
+            value: "/etc/ubbagent/config.yaml"
+          - name: AGENT_LOCAL_PORT
+            value: "4567"
+          - name: AGENT_ENCODED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.reportingSecret }}
+                key: reporting-key
+          - name: AGENT_CONSUMER_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.reportingSecret }}
+                key: consumer-id
+          volumeMounts:
+          - name: ubbagent-config
+            mountPath: /etc/ubbagent

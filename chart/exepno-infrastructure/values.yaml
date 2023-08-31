@@ -2,21 +2,24 @@ image:
   repository: gcr.io/bisees-public/exepno-infrastructure
   tag: 1.0.0
 
+ubbagent:
+  image: gcr.io/cloud-marketplace-tools/metering/ubbagent:latest
+
 serviceAccount:
   create: true
   name: ""
 
 ingress:
-  grafana_host: ""
-  jenkins_host: ""
-  argocd_host: ""
-  airflow_host: ""
-  openmetadata_host: ""
-  kibana_host: ""
-  jira_host: ""
-  confluence_host: ""
-  gitea_host: ""
-  kubeshark_host: ""
+  grafana_host: "grafana.example.com"
+  jenkins_host: "jenkins.example.com"
+  argocd_host: "argocd.example.com"
+  airflow_host: "airflow.example.com"
+  openmetadata_host: "openmetadata.example.com"
+  kibana_host: "kibana.example.com"
+  jira_host: "jira.example.com"
+  confluence_host: "confluence.example.com"
+  gitea_host: "git.example.com"
+  kubeshark_host: "kubeshark.example.com"
 
 monitoring:
   alertmanager:
@@ -136,15 +139,17 @@ nfs:
 
 openmetadataDependencies:
   secrets:
-    openmetadataAirflowPassword: ""
-    saEmail: ""
+    openmetadataAirflowPassword: "IHVsivMb004N4IqU"
+    saEmail: "airflow-sa@mygcp-project.iam.gserviceaccount.com"
     # github_username: ""
     # github_token: ""
   airflow:
     airflow:
-      image:
-        repository: gcr.io/bisees-public/exepno-infrastructure/ingestion
-        tag: 1.0.0
+      crawlOutputBucket: ""
+      logsOutputBucket: ""
+    #   image:
+    #     repository: gcr.io/bisees-public/exepno-infrastructure/ingestion
+    #     tag: 1.0.0
     dags:
       persistence:
         size: 5Gi
@@ -161,7 +166,6 @@ openmetadataDependencies:
       registry: gcr.io
       repository: bisees-public/exepno-infrastructure/om-mysql
       tag: 1.0.0
-      pullPolicy: Always
     auth:
       rootPassword: ""
     persistence:
@@ -186,6 +190,7 @@ eck:
       tag: 1.0.0
   elasticsearch:
     image: gcr.io/bisees-public/exepno-infrastructure/elasticsearch:1.0.0
+    count: 2
     persistence:
       storageClassName: standard-rwo
       storage: 50Gi
@@ -197,6 +202,7 @@ eck:
     image: gcr.io/bisees-public/exepno-infrastructure/filebeat:1.0.0
 
 jira:
+  replicaCount: 1
   global:
     postgresql:
       auth:
@@ -231,6 +237,7 @@ jira:
     sharedStorage: 10Gi
 
 confluence:
+  replicaCount: 1
   global:
     postgresql:
       auth:
@@ -298,7 +305,7 @@ gitea:
     size: 10Gi
 
 kubeshark:
-  approveddomains: 'gmail.com'
+  approveddomains: "gmail.com,outlook.com"
   docker:
     registry: gcr.io/bisees-public/exepno-infrastructure
     tag: 1.0.0

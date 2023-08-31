@@ -47,6 +47,12 @@ x-google-marketplace:
         kubeshark.docker.tag:
           type: TAG
 
+    # ubbagent image
+    ubbagent:
+      properties:
+        ubbagent.image:
+          type: FULL
+
     # monitoring images
     alertmanager:
       properties:
@@ -203,12 +209,12 @@ x-google-marketplace:
           type: TAG
 
     # openmetadata-dependencies images
-    ingestion:
-      properties:
-        openmetadataDependencies.airflow.airflow.image.repository:
-          type: REPO_WITH_REGISTRY
-        openmetadataDependencies.airflow.airflow.image.tag:
-          type: TAG
+    # ingestion:
+    #   properties:
+    #     openmetadataDependencies.airflow.airflow.image.repository:
+    #       type: REPO_WITH_REGISTRY
+    #     openmetadataDependencies.airflow.airflow.image.tag:
+    #       type: TAG
     git-sync:
       properties:
         openmetadataDependencies.airflow.dags.gitSync.image.repository:
@@ -521,7 +527,7 @@ properties:
       type: GENERATED_PASSWORD
       generatedPassword:
         length: 16
-        base64: True
+        base64: False
   openmetadataDependencies.airflow.airflow.crawlOutputBucket:
     title: Airflow Dags Output Bucket
     description: GCS Bucket to use for storing Airflow Dags output.
@@ -889,6 +895,12 @@ properties:
     type: string
     default: "1Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # ubbagent properties
+  reportingSecret:
+    type: string
+    x-google-marketplace:
+      type: REPORTING_SECRET
 
 required:
 - name
