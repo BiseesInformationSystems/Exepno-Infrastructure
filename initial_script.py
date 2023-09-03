@@ -532,25 +532,13 @@ users:
     region=args.region
   )
 
-  # Ask whether to create CloudDNS Zone
-  dns_answer = input("Do you want to create a CloudDNS Zone to manage your Domain? [yes/no]: ")
-  if dns_answer == "yes":
-    found = False
-    while not found:
-      domain = input("Enter your domain name: ")
-      matched = match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', domain)
-      if matched:
-        domain = matched.string
-        found = True
-      else:
-        domain = None
-        print("Incorrect value for domain. Please try again.")
-
+  # Set up CloudDNS Managed Zone
+  if args.setup_dns:
     dns_zone = gcp.dns.ManagedZone(
-      f'{args.project_id}-{domain.replace(".", "-")}',
-      description=f"Managed DNS Zone for {domain}",
-      dns_name=f"{domain}.",
-      name=f'{args.project_id}-{domain.replace(".", "-")}'
+      f'{args.project_id}-{args.domain.replace(".", "-")}',
+      description=f"Managed DNS Zone for {args.domain}",
+      dns_name=f"{args.domain}.",
+      name=f'{args.project_id}-{args.domain.replace(".", "-")}'
     )
 
     domains = [
@@ -562,20 +550,18 @@ users:
       "Kibana",
       "Jira",
       "Confluence",
-      "Gitea",
+      "Git",
       "Kubeshark"
     ]
 
     for subdomain in domains:
       gcp.dns.RecordSet(
-        f"{subdomain}.{domain}.",
+        f"{subdomain}.{args.domain}.",
         name=dns_zone.dns_name.apply(lambda dns_name: f"{subdomain.lower()}.{dns_name}"),
         managed_zone=dns_zone.name,
         type="A",
         ttl=60,
         rrdatas=[static.address])
-  else:
-    print("Skipping DNS Automation.")
 
   # Create CloudNAT configuration to allow internet access to worker nodes
   router = gcp.compute.Router(
@@ -719,7 +705,7 @@ def main():
   up.add_argument("--node-count", help="Number of worker nodes in the Kubernetes cluster [Default: 7]", type=int, default=7)
   up.add_argument("--machine-type", help="Machine type of Kubernetes cluster worker nodes [Default: e2-standard-4]", default="e2-standard-4")
   up.add_argument("--namespace", help="Namespace in which to deploy kubernetes resources [Default: exepno-system]", default="exepno-system")
-  up.set_defaults(func="create")
+  up.set_defaults(func="create", setup_dns=False, domain=None)
 
   # Command to delete the infrastructure
   down = subparsers.add_parser(name="delete", help="Delete Exepno Infrastructure", description="Deletes the private GKE Cluster and its associated resources.")
@@ -760,15 +746,32 @@ def main():
   stack.workspace.install_plugin("kubernetes", "v4.1.1")
   print("Successfully installed the required plugins.")
 
+  # Ask whether to create CloudDNS Zone
+  dns_answer = input("Do you want to create a CloudDNS Zone to manage your Domain? [yes/no]: ")
+  if dns_answer == "yes":
+    args.setup_dns = True
+    found = False
+    while not found:
+      domain = input("Enter your domain name: ")
+      matched = match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', domain)
+      if matched:
+        args.domain = matched.string
+        found = True
+      else:
+        domain = None
+        print("Incorrect value for domain. Please try again.")
+  else:
+    print("Skipping DNS Automation.")
+
   stack.set_config("gcp:project", ConfigValue(value=args.project_id))
   stack.set_config("gcp:region", ConfigValue(value=args.region))
   stack.set_config("gcp:zone", ConfigValue(value=f"{args.region}-a"))
   stack.set_config("gcp:credentials", ConfigValue(value=abspath(args.sa_file), secret=True))
 
-  result = run(["helm", "repo", "up"], check=True, capture_output=True, text=True)
-  if result.returncode != 0:
-    print(result.stderr)
-    exit(1)
+  # result = run(["helm", "repo", "up"], check=True, capture_output=True, text=True)
+  # if result.returncode != 0:
+  #   print(result.stderr)
+  #   exit(1)
 
   if args.func == "create":
     print("Creating Exepno Infrastructure...")
