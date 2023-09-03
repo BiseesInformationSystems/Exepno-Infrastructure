@@ -641,7 +641,7 @@ users:
   # Create a GCP service account for Airflow
   airflow_sa = gcp.serviceaccount.Account(
     "airflow_sa",
-    account_id="exepno-infrastructure-airflow-sa",
+    account_id="exepno-infrastructure-airflow",
     display_name=f'GCP SA bound to K8s SA openmetadata/airflow',
     opts=ResourceOptions(
       depends_on=[k8s_infra]
@@ -659,7 +659,7 @@ users:
   # Attach necesssary roles to the Airflow service account
   for role in airflow_roles:
     airflow_sa_permissions = gcp.projects.IAMMember(
-      f'exepno-infrastructure-airflow-sa-role-{role.split("/")[1]}',
+      f'exepno-infrastructure-airflow-role-{role.split("/")[1]}',
       project=args.project_id,
       role=role,
       member=airflow_sa.email.apply(lambda email: f"serviceAccount:{email}"),
@@ -669,7 +669,7 @@ users:
     )
 
   # Give k8s SA access to GCP Airflow SA
-  k8s_sa_in_gcp_form = f'serviceAccount:{args.project_id}.svc.id.goog[openmetadata/airflow]'
+  k8s_sa_in_gcp_form = f'serviceAccount:{args.project_id}.svc.id.goog[{args.namespace}/airflow]'
   workload_id = gcp.serviceaccount.IAMMember(
     "workload_id_airflow_sa",
     role="roles/iam.workloadIdentityUser",
@@ -744,10 +744,10 @@ def main():
   print("Installing plugins...")
   stack.workspace.install_plugin("gcp", "v6.64.0")
   stack.workspace.install_plugin("kubernetes", "v4.1.1")
-  print("Successfully installed the required plugins.")
+  print("Successfully installed the required plugins.\n")
 
   # Ask whether to create CloudDNS Zone
-  dns_answer = input("Do you want to create a CloudDNS Zone to manage your Domain? [yes/no]: ")
+  dns_answer = input("Do you want to create a CloudDNS Managed Zone for your Domain? [yes/no]: ")
   if dns_answer == "yes":
     args.setup_dns = True
     found = False
@@ -774,7 +774,7 @@ def main():
   #   exit(1)
 
   if args.func == "create":
-    print("Creating Exepno Infrastructure...")
+    print("\nCreating Exepno Infrastructure...")
     res = stack.up()
     print("Update Result:", res.summary.result)
     print("Update Message:", res.summary.message)
@@ -784,11 +784,11 @@ def main():
     print("Update Kind:", res.summary.kind)
     print("Outputs:", res.outputs)
   elif args.func == "delete":
-    print("Deleting Exepno Infrastructure...")
+    print("\nDeleting Exepno Infrastructure...")
     stack.destroy()
     exit(0)
   else:
-    print("Incorrect command.")
+    print("\nIncorrect command.")
     exit(1)
 
 
