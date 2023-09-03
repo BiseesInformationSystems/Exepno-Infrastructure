@@ -1,8 +1,9 @@
 from os import name as osname
 from os.path import abspath
-from argparse import ArgumentParser, Namespace
 from re import match
 from subprocess import run
+from json import dumps
+from argparse import ArgumentParser, Namespace
 import pulumi_gcp as gcp
 from pulumi.automation import create_or_select_stack, fully_qualified_stack_name, LocalWorkspaceOptions, ProjectSettings, ConfigValue
 from pulumi import ResourceOptions, Output, ComponentResource, export
@@ -776,16 +777,12 @@ def main():
   if args.func == "create":
     print("\nCreating Exepno Infrastructure...")
     res = stack.up()
-    print("Update Result:", res.summary.result)
-    print("Update Message:", res.summary.message)
-    print("Update Config:", res.summary.config)
-    print("Update Deployment:", res.summary.Deployment)
-    print("Update Environment:", res.summary.environment)
-    print("Update Kind:", res.summary.kind)
-    print("Outputs:", res.outputs)
+    print("Result:", res.summary.result)
+    print("Outputs:", dumps(res.outputs, indent=4))
   elif args.func == "delete":
     print("\nDeleting Exepno Infrastructure...")
-    stack.destroy()
+    res = stack.destroy()
+    print("Result:", res.summary.result)
     exit(0)
   else:
     print("\nIncorrect command.")
