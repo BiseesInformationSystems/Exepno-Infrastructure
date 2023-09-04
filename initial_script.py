@@ -1,8 +1,7 @@
 from os import name as osname
 from os.path import abspath
 from re import match
-from subprocess import run
-from json import dumps
+from json import dumps, loads
 from argparse import ArgumentParser, Namespace
 import pulumi_gcp as gcp
 from pulumi.automation import create_or_select_stack, fully_qualified_stack_name, LocalWorkspaceOptions, ProjectSettings, ConfigValue
@@ -219,40 +218,6 @@ spec:
           depends_on=[cert_manager]
         )
       )
-
-# def install_pulumi_cli():
-#   try:
-#     # check if Pulumi is installed
-#     output = run(["pulumi", "version"], check=True, capture_output=True)
-#     print("Pulumi Version:", output.stdout.decode())
-
-#   except Exception as e:
-#     print("Error occured:", e)
-#     install = input("Pulumi CLI is not installed.\nWould you like to me to install it for you? [yes|no]: ")
-#     if install == "yes" :
-#       os_name = os.name
-#       print("Installing Pulumi CLI...")
-#       command = r'powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString(\'https://get.pulumi.com/install.ps1\'))" && SET "PATH=%PATH%;%USERPROFILE%\\\.pulumi\\bin"'
-#       if os_name == "nt":
-#         installed = run(['cmd', '/k', command], shell=True, check=True, capture_output=False, text=True, stdout=PIPE, stderr=PIPE)
-#         print(installed.stdout.decode())
-#       elif os_name == "posix":
-#         installed = run([
-#           "curl",
-#           "-fsSL",
-#           "https://get.pulumi.com",
-#           "|",
-#           "sh",
-#           "--silent"
-#           ], check=True, capture_output=True)
-#         print(installed.stdout.decode())
-#       else:
-#         print("Unsupported Operating System. ")
-#         print("Please install it manually, place it in $PATH and then rerun this tool.\nExiting...")
-#         exit(1)
-#     else:
-#       print("Please manually install Pulumi CLI, place it in $PATH and then rerun this tool.\nExiting...")
-#       exit(1)
 
 def create_infrastructure(args: Namespace):
   # Set GCP Zone
@@ -539,7 +504,7 @@ users:
       f'{args.project_id}-{args.domain.replace(".", "-")}',
       description=f"Managed DNS Zone for {args.domain}",
       dns_name=f"{args.domain}.",
-      name=f'{args.project_id}-{args.domain.replace(".", "-")}'
+      name=args.domain.replace(".", "-")
     )
 
     domains = [
@@ -547,7 +512,7 @@ users:
       "Jenkins",
       "ArgoCD",
       "Airflow",
-      "OpenMetadata",
+      "Open-Metadata",
       "Kibana",
       "Jira",
       "Confluence",
@@ -555,14 +520,15 @@ users:
       "Kubeshark"
     ]
 
+    record_sets = []
     for subdomain in domains:
-      gcp.dns.RecordSet(
+      record_sets.append(gcp.dns.RecordSet(
         f"{subdomain}.{args.domain}.",
-        name=dns_zone.dns_name.apply(lambda dns_name: f"{subdomain.lower()}.{dns_name}"),
+        name=f"{subdomain.lower()}.{args.domain}.",
         managed_zone=dns_zone.name,
         type="A",
         ttl=60,
-        rrdatas=[static.address])
+        rrdatas=[static.address]))
 
   # Create CloudNAT configuration to allow internet access to worker nodes
   router = gcp.compute.Router(
@@ -682,12 +648,12 @@ users:
   )
 
   export("GKE Cluster Name", gke_cluster.name)
-  export("Airflow Output Bucket URL", crawl_output_bucket.url)
-  export("Airflow Logs Bucket URL", airflow_logs_bucket.url)
+  export("Airflow Output Bucket URL", crawl_output_bucket.name)
+  export("Airflow Logs Bucket URL", airflow_logs_bucket.name)
   export("Ingress Controller Public IP", static.address)
-  export("Airflow ServiceAccount Id", airflow_sa.id)
+  export("Airflow ServiceAccount Email", airflow_sa.email)
   for subdomain in domains:
-    full_domain = dns_zone.dns_name.apply(lambda dns_name: f"{subdomain.lower()}.{dns_name}")
+    full_domain = f"{subdomain.lower()}.{args.domain}"
     export(f"{subdomain} Domain", full_domain)
 
 def main():
@@ -718,9 +684,6 @@ def main():
   down.set_defaults(func="delete")
 
   args = global_parser.parse_args()
-
-  # Install Pulumi CLI if not installed
-  # install_pulumi_cli()
 
   print("Initializing Stack...")
   stack_name = fully_qualified_stack_name("bisees", args.project_id, args.name)
@@ -769,26 +732,24 @@ def main():
   stack.set_config("gcp:zone", ConfigValue(value=f"{args.region}-a"))
   stack.set_config("gcp:credentials", ConfigValue(value=abspath(args.sa_file), secret=True))
 
-  # result = run(["helm", "repo", "up"], check=True, capture_output=True, text=True)
-  # if result.returncode != 0:
-  #   print(result.stderr)
-  #   exit(1)
-
   if args.func == "create":
     print("\nCreating Exepno Infrastructure...")
     res = stack.up()
     print("Result:", res.summary.result)
-    print("Outputs:", dumps(res.outputs, indent=4))
+    res_json = loads(f'{res.outputs}'.replace('\'', '\"'))
+    print("Outputs:")
+    for k, v in res_json.items():
+      print(f'\t{k:<30}: {v:<10}')
+
   elif args.func == "delete":
     print("\nDeleting Exepno Infrastructure...")
     res = stack.destroy()
     print("Result:", res.summary.result)
     exit(0)
+
   else:
     print("\nIncorrect command.")
     exit(1)
-
-
 
 if __name__ == "__main__":
   main()
