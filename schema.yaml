@@ -16,6 +16,20 @@ x-google-marketplace:
     # Setting "recommended" to "true" indicates that users are encouraged to update as soon as possible.
     recommended: false
 
+  # Specify the requirements for the Kubernetes cluster
+  clusterConstraints:
+    assistedClusterCreation:
+      type: DISABLED
+      creationGuidance: "Create a GKE Cluster by following the Exepno Infrastructure Deployment Guide."
+    resources:
+    - replicas: 4
+      requests:
+        cpu: 1.8
+        memory: 6Gi
+      affinity:
+        simpleNodeAffinity:
+          type: REQUIRE_ONE_NODE_PER_REPLICA
+
   deployerServiceAccount:
     description: Required to deploy all Exepno services.
     roles:
@@ -438,6 +452,50 @@ properties:
     description: Storage size to accomodate for Grafana Persistent Volumes.
     type: string
     default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+
+  # postgresql properties
+  postgresql.global.postgresql.auth.database:
+    title: PostgreSQL Database Name
+    description: Name to use for PostgreSQL Database.
+    type: string
+    default: exepno
+  postgresql.global.postgresql.auth.username:
+    title: PostgreSQL Database user's username
+    description: Username to use for PostgreSQL Database user.
+    type: string
+    default: exepno
+  postgresql.global.postgresql.auth.password:
+    title: PostgreSQL Database user's password
+    description: Password to use for PostgreSQL Database user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  postgresql.global.postgresql.auth.postgresPassword:
+    title: PostgreSQL Database root user password
+    description: Password to use for PostgreSQL Database root user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
+  postgresql.global.postgresql.persistence.storageClass:
+    title: Storage Class for PostgreSQL Database PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL Database.
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  postgresql.global.postgresql.persistence.size:
+    title: Storage size for PostgreSQL Database PersistentVolume
+    description: Storage size to accomodate for PostgreSQL Database Persistent Volumes.
+    type: string
+    default: "50Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
 
   # jenkins properties

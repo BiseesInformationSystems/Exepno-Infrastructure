@@ -5,6 +5,8 @@ image:
 ubbagent:
   image: gcr.io/cloud-marketplace-tools/metering/ubbagent:latest
 
+reportingSecret: ""
+
 serviceAccount:
   create: true
   name: ""
@@ -85,6 +87,18 @@ monitoring:
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/kube-state-metrics
       tag: 1.0.0
+
+postgresql:
+  global:
+    postgresql:
+      auth:
+        password: ""
+        postgresPassword: ""
+        username: exepno
+        database: exepno
+      persistence:
+        storageClass: standard-rwo
+        size: 50Gi
 
 jenkins:
   controller:

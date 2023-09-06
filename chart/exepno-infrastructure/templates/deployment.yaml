@@ -21,6 +21,9 @@ spec:
         - name: values
           secret:
             secretName: {{ include "exepno-infrastructure.fullname" . }}
+        - name: report
+          secret:
+            secretName: {{ .Values.reportingSecret }}
         - name: ubbagent-config
           configMap:
             name: {{ include "exepno-infrastructure.fullname" . }}
@@ -40,6 +43,8 @@ spec:
           volumeMounts:
             - mountPath: /values
               name: values
+            - mountPath: /billing
+              name: report
           startupProbe:
             exec:
               command:

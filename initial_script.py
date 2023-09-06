@@ -36,41 +36,12 @@ class K8sInfra(ComponentResource):
           ignore_changes=['metadata["labels"]', 'spec']
         ),
         metadata={
-          "name": args.namespace
+          "name": args.namespace,
+          "labels": {
+            "bisees.com/app": "exepno-infrastructure"
+          }
         }
       )
-
-      # postgresql = Release(
-      #   "postgresql",
-      #   ReleaseArgs(
-      #     name="postgresql",
-      #     namespace="openmetadata",
-      #     chart="postgresql",
-      #     version="12.1.9",
-      #     repository_opts=RepositoryOptsArgs(
-      #         repo="https://charts.bitnami.com/bitnami",
-      #     ),
-      #     value_yaml_files=[FileAsset("./kubernetes/values/postgresql.yaml")],
-      #     values={
-      #       "global": {
-      #         "postgresql": {
-      #           "auth": {
-      #             "postgresPassword": config.require_secret("postgresql_postgresPassword"),
-      #             "password": config.require_secret("postgresql_password")
-      #           }
-      #         }
-      #       }
-      #     },
-      #     create_namespace=True,
-      #     dependency_update=True,
-      #     lint=True,
-      #     atomic=True,
-      #     cleanup_on_fail=True
-      #   ),
-      #   ResourceOptions(
-      #     parent=self
-      #   )
-      # )
 
       ingress = Release(
         "ingress-nginx",
@@ -116,9 +87,6 @@ class K8sInfra(ComponentResource):
             "defaultBackend": {
               "enabled": True
             }
-            # "tcp": {
-            #   "5432": f'{postgresql.status.namespace}/{postgresql.status.name}:5432'
-            # }
           },
           create_namespace=True,
           dependency_update=True,
@@ -648,8 +616,8 @@ users:
   )
 
   export("GKE Cluster Name", gke_cluster.name)
-  export("Airflow Output Bucket URL", crawl_output_bucket.name)
-  export("Airflow Logs Bucket URL", airflow_logs_bucket.name)
+  export("Airflow Output Bucket Name", crawl_output_bucket.name)
+  export("Airflow Logs Bucket Name", airflow_logs_bucket.name)
   export("Ingress Controller Public IP", static.address)
   export("Airflow ServiceAccount Email", airflow_sa.email)
   for subdomain in domains:
