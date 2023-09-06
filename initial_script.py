@@ -33,7 +33,7 @@ class K8sInfra(ComponentResource):
         args.namespace,
         ResourceOptions(
           parent=self,
-          ignore_changes=['metadata["labels"]', 'spec']
+          ignore_changes=['metadata["labels"]["kubernetes.io/metadata.name"]', 'spec']
         ),
         metadata={
           "name": args.namespace,
@@ -620,9 +620,10 @@ users:
   export("Airflow Logs Bucket Name", airflow_logs_bucket.name)
   export("Ingress Controller Public IP", static.address)
   export("Airflow ServiceAccount Email", airflow_sa.email)
-  for subdomain in domains:
-    full_domain = f"{subdomain.lower()}.{args.domain}"
-    export(f"{subdomain} Domain", full_domain)
+  if args.setup_dns:
+    for subdomain in domains:
+      full_domain = f"{subdomain.lower()}.{args.domain}"
+      export(f"{subdomain} Domain", full_domain)
 
 def main():
   # Build Parser
