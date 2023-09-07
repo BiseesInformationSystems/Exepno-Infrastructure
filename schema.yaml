@@ -249,12 +249,12 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         openmetadataDependencies.mysql.image.tag:
           type: TAG
-    om-elasticsearch:
-      properties:
-        openmetadataDependencies.elasticsearch.image:
-          type: REPO_WITH_REGISTRY
-        openmetadataDependencies.elasticsearch.imageTag:
-          type: TAG
+    # om-elasticsearch:
+    #   properties:
+    #     openmetadataDependencies.elasticsearch.image:
+    #       type: REPO_WITH_REGISTRY
+    #     openmetadataDependencies.elasticsearch.imageTag:
+    #       type: TAG
 
     # openmetadata images
     openmetadata:

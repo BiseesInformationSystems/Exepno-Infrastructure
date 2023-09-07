@@ -36,7 +36,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: CRB_NAME
+            - name: FULL_NAME
               value: {{ include "exepno-infrastructure.fullname" . }}
             - name: SA_NAME
               value: {{ include "exepno-infrastructure.serviceAccountName" . }}

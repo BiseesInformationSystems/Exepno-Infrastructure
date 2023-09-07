@@ -186,8 +186,8 @@ openmetadataDependencies:
       storageClass: standard-rwo
       size: 50Gi
   elasticsearch:
-    image: gcr.io/bisees-public/exepno-infrastructure/om-elasticsearch
-    imageTag: 1.0.0
+    # image: gcr.io/bisees-public/exepno-infrastructure/om-elasticsearch
+    # imageTag: 1.0.0
     persistence:
       storageClassName: standard-rwo
       storage: 30Gi
