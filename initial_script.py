@@ -640,7 +640,7 @@ def main():
   up.add_argument("--cluster-name", help="GKE Kubernetes Cluster name [Default: exepno-infrastructure]", default="exepno-infrastructure")
   up.add_argument("--node-count", help="Number of worker nodes in the Kubernetes cluster [Default: 7]", type=int, default=7)
   up.add_argument("--machine-type", help="Machine type of Kubernetes cluster worker nodes [Default: e2-standard-4]", default="e2-standard-4")
-  up.add_argument("--namespace", help="Namespace in which to deploy kubernetes resources [Default: exepno-infra]", default="exepno-infra")
+  up.add_argument("--namespace", help="Namespace in which to deploy kubernetes resources [Default: exepno-system]", default="exepno-system")
   up.set_defaults(func="create", setup_dns=False, domain=None)
 
   # Command to delete the infrastructure
