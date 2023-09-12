@@ -189,18 +189,6 @@ x-google-marketplace:
           type: REPO_WITH_REGISTRY
         argocd.global.image.tag:
           type: TAG
-    dex:
-      properties:
-        argocd.dex.image.repository:
-          type: REPO_WITH_REGISTRY
-        argocd.dex.image.tag:
-          type: TAG
-    redis:
-      properties:
-        argocd.redis.image.repository:
-          type: REPO_WITH_REGISTRY
-        argocd.redis.image.tag:
-          type: TAG
     redis-exporter:
       properties:
         argocd.redis.exporter.image.repository:
@@ -223,12 +211,6 @@ x-google-marketplace:
           type: TAG
 
     # openmetadata-dependencies images
-    # ingestion:
-    #   properties:
-    #     openmetadataDependencies.airflow.airflow.image.repository:
-    #       type: REPO_WITH_REGISTRY
-    #     openmetadataDependencies.airflow.airflow.image.tag:
-    #       type: TAG
     git-sync:
       properties:
         openmetadataDependencies.airflow.dags.gitSync.image.repository:
@@ -249,12 +231,6 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         openmetadataDependencies.mysql.image.tag:
           type: TAG
-    # om-elasticsearch:
-    #   properties:
-    #     openmetadataDependencies.elasticsearch.image:
-    #       type: REPO_WITH_REGISTRY
-    #     openmetadataDependencies.elasticsearch.imageTag:
-    #       type: TAG
 
     # openmetadata images
     openmetadata:
@@ -339,18 +315,6 @@ x-google-marketplace:
           type: TAG
 
     # jira and confluence images
-    # jira-software:
-    #   properties:
-    #     jira.image.repository:
-    #       type: REPO_WITH_REGISTRY
-    #     jira.image.tag:
-    #       type: TAG
-    # confluence:
-    #   properties:
-    #     confluence.image.repository:
-    #       type: REPO_WITH_REGISTRY
-    #     confluence.image.tag:
-    #       type: TAG
     alpine:
       properties:
         jira.nfsPermissionFixer.imageRepo:
@@ -946,7 +910,7 @@ properties:
     description: Only Email IDs having these domains will be able to access Kubeshark UI. Specify domains as a comma-seperated list.
     type: string
     default: "gmail.com,outlook.com"
-    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}(,([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,})*$'
   kubeshark.storagelimit:
     title: Storage size for Kubeshark PersistentVolume
     description: Storage size to accomodate for Kubeshark Persistent Volumes.

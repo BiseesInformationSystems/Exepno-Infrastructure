@@ -125,14 +125,7 @@ argocd:
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/argocd
       tag: 1.0.0
-  dex:
-    image:
-      repository: gcr.io/bisees-public/exepno-infrastructure/dex
-      tag: 1.0.0
   redis:
-    image:
-      repository: gcr.io/bisees-public/exepno-infrastructure/redis
-      tag: 1.0.0
     exporter:
       image:
         repository: gcr.io/bisees-public/exepno-infrastructure/redis-exporter
@@ -161,9 +154,6 @@ openmetadataDependencies:
     airflow:
       crawlOutputBucket: ""
       logsOutputBucket: ""
-    #   image:
-    #     repository: gcr.io/bisees-public/exepno-infrastructure/ingestion
-    #     tag: 1.0.0
     dags:
       persistence:
         size: 5Gi
@@ -186,8 +176,6 @@ openmetadataDependencies:
       storageClass: standard-rwo
       size: 50Gi
   elasticsearch:
-    # image: gcr.io/bisees-public/exepno-infrastructure/om-elasticsearch
-    # imageTag: 1.0.0
     persistence:
       storageClassName: standard-rwo
       storage: 30Gi
@@ -239,9 +227,6 @@ jira:
       persistence:
         storageClass: standard-rwo
         size: 10Gi
-  # image:
-  #   repository: gcr.io/bisees-public/exepno-infrastructure/jira-software
-  #   tag: 1.0.0
   nfsPermissionFixer:
     imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
     imageTag: 1.0.0
@@ -274,9 +259,6 @@ confluence:
       persistence:
         storageClass: standard-rwo
         size: 10Gi
-  # image:
-  #   repository: gcr.io/bisees-public/exepno-infrastructure/confluence
-  #   tag: 1.0.0
   nfsPermissionFixer:
     imageRepo: gcr.io/bisees-public/exepno-infrastructure/alpine
     imageTag: 1.0.0
