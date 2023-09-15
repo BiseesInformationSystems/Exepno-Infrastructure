@@ -39,7 +39,7 @@ data:
     # the pricing metric. If it is not, a double type is likely
     # needed to provide sufficient precision.
     - name: terraform_plan_exepno_infrastructure_pulumi_cpu_hour
-      type: double
+      type: int
 
       # The endpoints section of a metric defines which endpoints the
       # metric data is sent to.
