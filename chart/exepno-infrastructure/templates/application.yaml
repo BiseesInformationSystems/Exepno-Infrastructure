@@ -7,10 +7,159 @@ metadata:
     app.kubernetes.io/name: {{ include "exepno-infrastructure.name" . }}
   annotations:
     marketplace.cloud.google.com/deploy-info: '{"partner_id": "0014M00001ppeE1QAI", "product_id": "exepno-infrastructure", "partner_name": "Bisees Information Systems"}'
+    kubernetes-engine.cloud.google.com/icon: data:image/jpg;base64,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
 spec:
   descriptor:
     type: Exepno Infrastructure
     version: '1.0.0'
+    description: |-
+      Exepno Infrastructure is a comprehensive platform that leverages a variety of popular
+      opensource Kubernetes technologies.
+      It streamlines complex tasks into a simplified, automated infrastructure deployment process.
+      It empowers users to automate complex tasks such as Data Warehouse and
+      Machine Learning processes, data pipeline management, and code deployment automation.
+      Gain competitive advantage by enhancing operational efficiency, reducing costs, and
+      seamlessly managing your application infrastructures with Exepno Infrastructure!
+    maintainers:
+      - name: Bisees Information Systems
+        url: https://bisees.com/ExepnoInfrastructure/index.html
+      - name: Adnan Saifee
+        email: asaifee02@gmail.com
+    owners:
+      - name: Bisees Information Systems
+        url: https://bisees.com/ExepnoInfrastructure/index.html
+    links:
+      - description: Exepno Infrastructure User Guide
+        url: https://bisees.com/ExepnoInfrastructure/Exepno-Infrastructure-Deployment-Guide.pdf
+      - description: Exepno Infrastructure Homepage
+        url: https://bisees.com/ExepnoInfrastructure/index.html
+  info:
+    - name: Grafana URL
+      type: Value
+      value: https://{{ .Values.ingress.grafana_host }}
+    - name: Grafana Login User
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: kube-prometheus-stack-grafana
+          key: admin-user
+    - name: Grafana Login Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: kube-prometheus-stack-grafana
+          key: admin-password
+    - name: PostgreSQL Connection String
+      type: Value
+      value: postgresql://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ getHostByName .Values.ingress.grafana_host }}:5432/{{ .Values.postgresql.global.postgresql.auth.database }}
+    - name: PostgreSQL Database
+      type: Value
+      value: {{ .Values.postgresql.global.postgresql.auth.database }}
+    - name: PostgreSQL {{ .Values.postgresql.global.postgresql.auth.username }} User Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: postgresql
+          key: password
+    - name: PostgreSQL Postgres User Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: postgresql
+          key: postgres-password
+    - name: Jenkins URL
+      type: Value
+      value: https://{{ .Values.ingress.jenkins_host }}
+    - name: Jenkins Login User
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: jenkins
+          key: jenkins-admin-user
+    - name: Jenkins Login Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: jenkins
+          key: jenkins-admin-password
+    - name: ArgoCD URL
+      type: Value
+      value: https://{{ .Values.ingress.argocd_host }}
+    - name: ArgoCD Login User
+      type: Value
+      value: admin
+    - name: ArgoCD Login Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: argocd-initial-admin-secret
+          key: password
+    - name: Airflow URL
+      type: Value
+      value: https://{{ .Values.ingress.airflow_host }}
+    - name: Airflow Login User
+      type: Value
+      value: admin
+    - name: Airflow Login Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: airflow-secrets
+          key: openmetadata-airflow-password
+    - name: Airflow Dags Output Bucket URL
+      type: Value
+      value: https://console.cloud.google.com/storage/browser/{{ .Values.openmetadataDependencies.airflow.airflow.crawlOutputBucket }}
+    - name: Airflow Logs Output Bucket URL
+      type: Value
+      value: https://console.cloud.google.com/storage/browser/{{ .Values.openmetadataDependencies.airflow.airflow.logsOutputBucket }}
+    - name: OpenMetadata URL
+      type: Value
+      value: https://{{ .Values.ingress.openmetadata_host }}
+    - name: OpenMetadata Login User
+      type: Value
+      value: admin
+    - name: OpenMetadata Login Password
+      type: Value
+      value: {{ default (derivePassword 1 "long" "password" "user" "openmetadata") .Values.openmetadata.password }}
+    - name: Kibana URL
+      type: Value
+      value: https://{{ .Values.ingress.kibana_host }}
+    - name: Kibana Login User
+      type: Value
+      value: elastic
+    - name: Kibana Login Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: elasticsearch-es-elastic-user
+          key: elastic
+    - name: Jira URL
+      type: Value
+      value: https://{{ .Values.ingress.jira_host }}
+    - name: Confluence URL
+      type: Value
+      value: https://{{ .Values.ingress.confluence_host }}
+    - name: Git URL
+      type: Value
+      value: https://{{ .Values.ingress.gitea_host }}
+    - name: Git Login User
+      type: Value
+      value: {{ .Values.gitea.admin.username }}
+    - name: Git Login Password
+      type: Value
+      value: {{ .Values.gitea.admin.password }}
+    - name: Kubeshark URL
+      type: Value
+      value: https://{{ .Values.ingress.kubeshark_host }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "exepno-infrastructure.name" . }}
@@ -22,8 +171,6 @@ spec:
     kind: Deployment
   - group: batch
     kind: Job
-  - group: rbac.authorization.k8s.io
-    kind: ClusterRoleBinding
   - group: rbac.authorization.k8s.io
     kind: ClusterRole
   - group: rbac.authorization.k8s.io

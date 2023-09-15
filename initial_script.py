@@ -240,6 +240,12 @@ def create_infrastructure(args: Namespace):
     project=args.project_id
   )
 
+  enable_servicecontrol = gcp.projects.Service(
+    "servicecontrol",
+    service="servicecontrol.googleapis.com",
+    project=args.project_id
+  )
+
   # Create a new network
   gke_network = gcp.compute.Network(
     f'{args.cluster_name}-vpc',
@@ -255,7 +261,8 @@ def create_infrastructure(args: Namespace):
         enable_storage_component,
         enable_storage,
         enable_containerregistry,
-        enable_container
+        enable_container,
+        enable_servicecontrol
       ]
     )
   )

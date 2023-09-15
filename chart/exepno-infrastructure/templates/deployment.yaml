@@ -54,6 +54,15 @@ spec:
             initialDelaySeconds: 900
             failureThreshold: 30
             periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - cat /apps/finished
+            initialDelaySeconds: 600
+            failureThreshold: 10
+            periodSeconds: 30
         - name: ubbagent
           image: {{ .Values.ubbagent.image }}
           env:

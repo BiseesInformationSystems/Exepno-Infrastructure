@@ -375,6 +375,15 @@ properties:
     type: string
     pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
     default: "grafana.example.com"
+  monitoring.grafana.adminPassword:
+    title: Grafana Admin user's password
+    description: Password to use for Grafana Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
   monitoring.alertmanager.alertmanagerSpec.storage.storageClassName:
     title: Storage Class for Alertmanager PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Alertmanager.
@@ -560,6 +569,12 @@ properties:
     description: GCS Bucket to use for storing Airflow logs.
     type: string
     default: "airflow-logs"
+  openmetadataDependencies.secrets.saEmail:
+    title: Airflow Service Account Email
+    description: Email address of the Airflow Service Account.
+    type: string
+    pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
+    default: "airflow-sa@mygcp-project.iam.gserviceaccount.com"
   openmetadataDependencies.airflow.airflow.adminEmail:
     title: Airflow Admin user Email
     description: Email address to use for Airflow Admin user.
@@ -576,12 +591,6 @@ properties:
     description: Last name to use for Airflow Admin user.
     type: string
     default: Admin
-  openmetadataDependencies.secrets.saEmail:
-    title: Airflow Service Account Email
-    description: Email address of the Airflow Service Account.
-    type: string
-    pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
-    default: "airflow-sa@mygcp-project.iam.gserviceaccount.com"
   # openmetadataDependencies.secrets.github_username:
   #   title: GitHub username
   #   description: Username of the GitHub account which contains the Airflow Dags repository.
@@ -645,6 +654,15 @@ properties:
     type: string
     pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
     default: "open-metadata.example.com"
+  openmetadata.password:
+    title: OpenMetadata Admin user's password
+    description: Password to use for OpenMetadata Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
 
   # elastic-stack properties
   ingress.kibana_host:

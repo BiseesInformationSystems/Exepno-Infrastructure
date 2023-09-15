@@ -59,6 +59,7 @@ monitoring:
         storageClassName: standard-rwo
         storage: 50Gi
   grafana:
+    adminPassword: ""
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/grafana
       tag: 1.0.0
@@ -102,6 +103,7 @@ postgresql:
 
 jenkins:
   controller:
+    adminPassword: ""
     image: gcr.io/bisees-public/exepno-infrastructure/jenkins
     tag: 1.0.0
     sidecars:
@@ -146,14 +148,17 @@ nfs:
 
 openmetadataDependencies:
   secrets:
-    openmetadataAirflowPassword: "IHVsivMb004N4IqU"
+    openmetadataAirflowPassword: ""
     saEmail: "airflow-sa@mygcp-project.iam.gserviceaccount.com"
     # github_username: ""
     # github_token: ""
   airflow:
     airflow:
-      crawlOutputBucket: ""
-      logsOutputBucket: ""
+      crawlOutputBucket: "airflow-dags"
+      logsOutputBucket: "airflow-logs"
+      adminEmail: "airflow@test.com"
+      adminFirstName: "Airflow"
+      adminLastName: "Admin"
     dags:
       persistence:
         size: 5Gi
@@ -184,6 +189,7 @@ openmetadata:
   image:
     repository: gcr.io/bisees-public/exepno-infrastructure/openmetadata
     tag: 1.0.0
+  password: ""
 
 eck:
   operator:
@@ -301,8 +307,9 @@ gitea:
     size: 10Gi
 
 kubeshark:
-  approveddomains: "gmail.com,outlook.com"
   docker:
     registry: gcr.io/bisees-public/exepno-infrastructure
     tag: 1.0.0
+  approveddomains: "gmail.com,outlook.com"
   storagelimit: 1Gi
+  license: ""

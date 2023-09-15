@@ -39,7 +39,7 @@ data:
     # the pricing metric. If it is not, a double type is likely
     # needed to provide sufficient precision.
     - name: terraform_plan_exepno_infrastructure_pulumi_cpu_hour
-      type: int
+      type: double
 
       # The endpoints section of a metric defines which endpoints the
       # metric data is sent to.
@@ -69,5 +69,5 @@ data:
         identity: gcp
         # The service name is unique to your application and will be
         # provided during onboarding.
-        serviceName: my-application.mp-my-company.appspot.com
+        serviceName: exepno-infrastructure.endpoints.bisees-public.cloud.goog
         consumerId: $AGENT_CONSUMER_ID  # From the reporting secret.
