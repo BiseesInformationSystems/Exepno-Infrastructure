@@ -655,8 +655,6 @@ def main():
   down.add_argument("name", help="[Required] Name for this deployment [Ex: dev]", metavar="NAME")
   down.add_argument("--project-id", help="[Required] GCP Project ID", required=True)
   down.add_argument("--sa-file", help="[Required] Path to GCP Service Account JSON Key file", required=True)
-  down.add_argument("--cluster-name", help="[Required] GKE Kubernetes Cluster name", required=True)
-  down.add_argument("--region", help="GKE Kubernetes Cluster region [Default: us-central1]", default="us-central1")
   down.set_defaults(func="delete")
 
   args = global_parser.parse_args()
@@ -687,21 +685,22 @@ def main():
   print("Successfully installed the required plugins.\n")
 
   # Ask whether to create CloudDNS Zone
-  dns_answer = input("Do you want to create a CloudDNS Managed Zone for your Domain? [yes/no]: ")
-  if dns_answer == "yes":
-    args.setup_dns = True
-    found = False
-    while not found:
-      domain = input("Enter your domain name: ")
-      matched = match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', domain)
-      if matched:
-        args.domain = matched.string
-        found = True
-      else:
-        domain = None
-        print("Incorrect value for domain. Please try again.")
-  else:
-    print("Skipping DNS Automation.")
+  if args.func == "create":
+    dns_answer = input("Do you want to create a CloudDNS Managed Zone for your Domain? [yes/no]: ")
+    if dns_answer == "yes":
+      args.setup_dns = True
+      found = False
+      while not found:
+        domain = input("Enter your domain name: ")
+        matched = match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', domain)
+        if matched:
+          args.domain = matched.string
+          found = True
+        else:
+          domain = None
+          print("Incorrect value for domain. Please try again.")
+    else:
+      print("Skipping DNS Automation.")
 
   stack.set_config("gcp:project", ConfigValue(value=args.project_id))
   stack.set_config("gcp:region", ConfigValue(value=args.region))

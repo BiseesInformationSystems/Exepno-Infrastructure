@@ -26,6 +26,7 @@ ingress:
 monitoring:
   alertmanager:
     alertmanagerSpec:
+      replicas: 3
       image:
         registry: gcr.io
         repository: bisees-public/exepno-infrastructure/alertmanager
@@ -51,6 +52,7 @@ monitoring:
         tag: 1.0.0
   prometheus:
     prometheusSpec:
+      replicas: 3
       image:
         registry: gcr.io
         repository: bisees-public/exepno-infrastructure/prometheus
@@ -60,6 +62,7 @@ monitoring:
         storage: 50Gi
   grafana:
     adminPassword: ""
+    replicas: 3
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/grafana
       tag: 1.0.0
@@ -85,11 +88,13 @@ monitoring:
       repository: gcr.io/bisees-public/exepno-infrastructure/node-exporter
       tag: 1.0.0
   kubeStateMetrics:
+    replicas: 3
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/kube-state-metrics
       tag: 1.0.0
 
 postgresql:
+  replicas: 3
   global:
     postgresql:
       auth:
@@ -129,16 +134,26 @@ argocd:
       tag: 1.0.0
   redis:
     exporter:
-      image:
-        repository: gcr.io/bisees-public/exepno-infrastructure/redis-exporter
-        tag: 1.0.0
+      image: gcr.io/bisees-public/exepno-infrastructure/redis-exporter
+      tag: 1.0.0
+    persistentVolume:
+      storageClass: "standard-rwo"
+      size: 10Gi
   server:
+    replicas: 3
     extensions:
       image:
         repository: gcr.io/bisees-public/exepno-infrastructure/argocd-extensions
         tag: 1.0.0
+  controller:
+    replicas: 3
+  repoServer:
+    replicas: 3
+  applicationSet:
+    replicas: 3
 
 nfs:
+  replicaCount: 3
   image:
     repository: gcr.io/bisees-public/exepno-infrastructure/nfs-provisioner
     tag: 1.0.0
@@ -170,7 +185,14 @@ openmetadataDependencies:
       image:
         repository: gcr.io/bisees-public/exepno-infrastructure/pgbouncer
         tag: 1.0.0
+    scheduler:
+      replicas: 3
+    web:
+      replicas: 3
+    triggerer:
+      replicas: 3
   mysql:
+    replicaCount: 3
     image:
       registry: gcr.io
       repository: bisees-public/exepno-infrastructure/om-mysql
@@ -181,6 +203,7 @@ openmetadataDependencies:
       storageClass: standard-rwo
       size: 50Gi
   elasticsearch:
+    replicas: 1
     persistence:
       storageClassName: standard-rwo
       storage: 30Gi
@@ -190,29 +213,33 @@ openmetadata:
     repository: gcr.io/bisees-public/exepno-infrastructure/openmetadata
     tag: 1.0.0
   password: ""
+  replicaCount: 3
 
 eck:
   operator:
+    replicaCount: 1
     image:
       repository: gcr.io/bisees-public/exepno-infrastructure/eck-operator
       tag: 1.0.0
   elasticsearch:
     image: gcr.io/bisees-public/exepno-infrastructure/elasticsearch:1.0.0
-    count: 2
+    count: 3
     persistence:
       storageClassName: standard-rwo
       storage: 50Gi
   kibana:
     image: gcr.io/bisees-public/exepno-infrastructure/kibana:1.0.0
+    count: 3
   metricbeat:
     image: gcr.io/bisees-public/exepno-infrastructure/metricbeat:1.0.0
   filebeat:
     image: gcr.io/bisees-public/exepno-infrastructure/filebeat:1.0.0
 
 jira:
-  replicaCount: 1
+  replicaCount: 3
   global:
     postgresql:
+      replicas: 3
       auth:
         password: ""
         postgresPassword: ""
@@ -242,9 +269,10 @@ jira:
     sharedStorage: 10Gi
 
 confluence:
-  replicaCount: 1
+  replicaCount: 3
   global:
     postgresql:
+      replicas: 3
       auth:
         password: ""
         postgresPassword: ""
@@ -272,8 +300,12 @@ confluence:
     storageClassName: standard-rwo
     storage: 10Gi
     sharedStorage: 10Gi
+    synchronyStorage: 10Gi
+  synchrony:
+    replicaCount: 3
 
 gitea:
+  replicaCount: 3
   image:
     registry: gcr.io
     repository: bisees-public/exepno-infrastructure/gitea
@@ -289,6 +321,7 @@ gitea:
     password: ""
     email: "gitea@test.com"
   postgresql:
+    replicas: 3
     password: ""
     image:
       registry: gcr.io
@@ -297,7 +330,8 @@ gitea:
     persistence:
       storageClass: standard-rwo
       size: 10Gi
-  memcached: 
+  memcached:
+    replicas: 3
     image:
       registry: gcr.io
       repository: bisees-public/exepno-infrastructure/memcached

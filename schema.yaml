@@ -191,9 +191,9 @@ x-google-marketplace:
           type: TAG
     redis-exporter:
       properties:
-        argocd.redis.exporter.image.repository:
+        argocd.redis.exporter.image:
           type: REPO_WITH_REGISTRY
-        argocd.redis.exporter.image.tag:
+        argocd.redis.exporter.tag:
           type: TAG
     argocd-extensions:
       properties:
@@ -369,21 +369,12 @@ properties:
       type: NAMESPACE
 
   # monitoring properties
-  ingress.grafana_host:
-    title: Grafana Ingress Hostname
-    description: Domain name to use for Grafana.
-    type: string
-    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
-    default: "grafana.example.com"
-  monitoring.grafana.adminPassword:
-    title: Grafana Admin user's password
-    description: Password to use for Grafana Admin user.
-    type: string
-    x-google-marketplace:
-      type: GENERATED_PASSWORD
-      generatedPassword:
-        length: 16
-        base64: False
+  monitoring.alertmanager.alertmanagerSpec.replicas:
+    title: AlertManager Replica Count
+    description: Number of nodes in AlertManager cluster.
+    type: integer
+    default: 3
+    min: 1
   monitoring.alertmanager.alertmanagerSpec.storage.storageClassName:
     title: Storage Class for Alertmanager PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Alertmanager.
@@ -398,6 +389,12 @@ properties:
     type: string
     default: "50Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  monitoring.prometheus.prometheusSpec.replicas:
+    title: Prometheus Replica Count
+    description: Number of Prometheus pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   monitoring.prometheus.prometheusSpec.storageSpec.storageClassName:
     title: Storage Class for Prometheus PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Prometheus.
@@ -412,6 +409,33 @@ properties:
     type: string
     default: "50Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  monitoring.kubeStateMetrics.replicas:
+    title: KubeStateMetrics Replica Count
+    description: Number of KubeStateMetrics pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  ingress.grafana_host:
+    title: Grafana Ingress Hostname
+    description: Domain name to use for Grafana.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+    default: "grafana.example.com"
+  monitoring.grafana.replicas:
+    title: Grafana Replica Count
+    description: Number of Grafana pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  monitoring.grafana.adminPassword:
+    title: Grafana Admin user's password
+    description: Password to use for Grafana Admin user.
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 16
+        base64: False
   monitoring.grafana.persistence.storageClassName:
     title: Storage Class for Grafana PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Grafana.
@@ -456,6 +480,12 @@ properties:
       generatedPassword:
         length: 16
         base64: False
+  postgresql.replicas:
+    title: PostgreSQL Replica Count
+    description: Number of PostgreSQL pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   postgresql.global.postgresql.persistence.storageClass:
     title: Storage Class for PostgreSQL Database PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL Database.
@@ -526,8 +556,52 @@ properties:
     type: string
     pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
     default: "argocd.example.com"
+  argocd.redis.persistentVolume.storageClass:
+    title: Storage Class for Redis [ArgoCD] PersistentVolumeClaim
+    description: Storage Class to use for provisioning Persistent Volumes for Redis [ArgoCD].
+    type: string
+    default: standard-rwo
+    enum:
+      - 'standard-rwo'
+      - 'premium-rwo'
+  argocd.redis.persistentVolume.size:
+    title: Storage size for Redis [ArgoCD] PersistentVolume
+    description: Storage size to accomodate for Redis [ArgoCD] Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  argocd.server.replicas:
+    title: ArgoCD Server Replica Count
+    description: Number of ArgoCD Server pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  argocd.controller.replicas:
+    title: ArgoCD Controller Replica Count
+    description: Number of ArgoCD Controller pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  argocd.repoServer.replicas:
+    title: ArgoCD RepoServer Replica Count
+    description: Number of ArgoCD RepoServer pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  argocd.applicationSet.replicas:
+    title: ArgoCD ApplicationSet Replica Count
+    description: Number of ArgoCD ApplicationSet pods to deploy.
+    type: integer
+    default: 3
+    min: 1
 
   # nfs-server-provisioner properties
+  nfs.replicaCount:
+    title: NFS Server Replica Count
+    description: Number of NFS Server pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   nfs.persistence.storageClass:
     title: Storage Class for NFS Server PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for NFS Server.
@@ -603,6 +677,36 @@ properties:
   #   title: GitHub Repository containing Airflow Dags
   #   description: HTTPS URL of the GitHub Repository containing Airflow Dags.
   #   type: string
+  openmetadataDependencies.airflow.dags.persistence.size:
+    title: Storage size for Airflow Dags PersistentVolume
+    description: Storage size to accomodate for Airflow Dags Persistent Volumes.
+    type: string
+    default: "5Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  openmetadataDependencies.airflow.scheduler.replicas:
+    title: Airflow Scheduler Replica Count
+    description: Number of Airflow Scheduler pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  openmetadataDependencies.airflow.web.replicas:
+    title: Airflow Web Replica Count
+    description: Number of Airflow Web pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  openmetadataDependencies.airflow.triggerer.replicas:
+    title: Airflow Triggerer Replica Count
+    description: Number of Airflow Triggerer pods to deploy.
+    type: integer
+    default: 3
+    min: 1
+  openmetadataDependencies.mysql.replicaCount:
+    title: MySQL [Airflow] Replica Count
+    description: Number of MySQL [Airflow] pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   openmetadataDependencies.mysql.auth.rootPassword:
     title: MySQL [Airflow] Root user password
     description: Password to use for MySQL [Airflow] Root user.
@@ -626,6 +730,12 @@ properties:
     type: string
     default: "50Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  openmetadataDependencies.elasticsearch.replicas:
+    title: Elasticsearch [OpenMetadata] Replica Count
+    description: Number of Elasticsearch [OpenMetadata] pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   openmetadataDependencies.elasticsearch.persistence.storageClassName:
     title: Storage Class for Elasticsearch [OpenMetadata] PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
@@ -639,12 +749,6 @@ properties:
     description: Storage size to accomodate for Elasticsearch Persistent Volumes.
     type: string
     default: "30Gi"
-    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
-  openmetadataDependencies.airflow.dags.persistence.size:
-    title: Storage size for Airflow Dags PersistentVolume
-    description: Storage size to accomodate for Airflow Dags Persistent Volumes.
-    type: string
-    default: "5Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
 
   # openmetadata properties
@@ -663,24 +767,26 @@ properties:
       generatedPassword:
         length: 16
         base64: False
+  openmetadata.replicaCount:
+    title: OpenMetadata Replica Count
+    description: Number of OpenMetadata pods to deploy.
+    type: integer
+    default: 3
+    min: 1
 
   # elastic-stack properties
-  ingress.kibana_host:
-    title: Kibana Ingress Hostname
-    description: Domain name to use for Kibana.
-    type: string
-    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
-    default: "kibana.example.com"
+  eck.operator.replicaCount:
+    title: ECK Operator Replica Count
+    description: Number of ECK Operator pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   eck.elasticsearch.count:
-    title: Elasticsearch Cluster Node Count
+    title: Elasticsearch Nodes Count
     description: Number of nodes in Elasticsearch cluster.
     type: integer
-    default: 2
-    enum:
-      - 1
-      - 2
-      - 3
-      - 5
+    default: 3
+    min: 1
   eck.elasticsearch.persistence.storageClassName:
     title: Storage Class for Elasticsearch PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
@@ -695,10 +801,28 @@ properties:
     type: string
     default: "50Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  ingress.kibana_host:
+    title: Kibana Ingress Hostname
+    description: Domain name to use for Kibana.
+    type: string
+    pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+    default: "kibana.example.com"
+  eck.kibana.count:
+    title: Kibana Replica Count
+    description: Number of Kibana pods to deploy.
+    type: integer
+    default: 3
+    min: 1
 
   # jira-postgresql properties
+  jira.global.postgresql.replicas:
+    title: PostgreSQL [Jira] Replica Count
+    description: Number of PostgreSQL [Jira] pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   jira.global.postgresql.auth.password:
-    title: (Jira) PostgreSQL Jira user password
+    title: PostgreSQL [Jira] Jira user password
     description: Password to use for PostgreSQL Jira user.
     type: string
     x-google-marketplace:
@@ -707,7 +831,7 @@ properties:
         length: 16
         base64: False
   jira.global.postgresql.auth.postgresPassword:
-    title: (Jira) PostgreSQL root user password
+    title: PostgreSQL [Jira] root user password
     description: Password to use for PostgreSQL root user.
     type: string
     x-google-marketplace:
@@ -741,11 +865,8 @@ properties:
     title: Jira Replica Count
     description: Number of replicas to deploy for Jira.
     type: integer
-    default: 1
-    enum:
-      - 1
-      - 3
-      - 5
+    default: 3
+    min: 1
   jira.persistence.storageClassName:
     title: Storage Class for Jira PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Jira.
@@ -768,6 +889,12 @@ properties:
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
 
   # confluence-postgresql properties
+  confluence.global.postgresql.replicas:
+    title: PostgreSQL [Confluence] Replica Count
+    description: Number of PostgreSQL [Confluence] pods to deploy.
+    type: integer
+    default: 3
+    min: 1
   confluence.global.postgresql.auth.password:
     title: PostgreSQL [Confluence] Confluence user password
     description: Password to use for PostgreSQL Confluence user.
@@ -812,11 +939,14 @@ properties:
     title: Confluence Replica Count
     description: Number of replicas to deploy for Confluence.
     type: integer
-    default: 1
-    enum:
-      - 1
-      - 3
-      - 5
+    default: 3
+    min: 1
+  confluence.synchrony.replicaCount:
+    title: Confluence Synchrony Replica Count
+    description: Number of replicas to deploy for Confluence Synchrony.
+    type: integer
+    default: 3
+    min: 1
   confluence.persistence.storageClassName:
     title: Storage Class for Confluence PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Confluence.
@@ -837,6 +967,12 @@ properties:
     type: string
     default: "10Gi"
     pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
+  confluence.persistence.synchronyStorage:
+    title: Storage size for Confluence Synchrony PersistentVolume
+    description: Storage size to accomodate for Confluence Synchrony Persistent Volumes.
+    type: string
+    default: "10Gi"
+    pattern: '^[1-9][0-9]*(\.[0-9]+)?[TGM]i?$'
 
   # gitea properties
   ingress.gitea_host:
@@ -845,6 +981,12 @@ properties:
     type: string
     pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
     default: "git.example.com"
+  gitea.replicaCount:
+    title: Gitea Replica Count
+    description: Number of replicas to deploy for Gitea.
+    type: integer
+    default: 3
+    min: 1
   gitea.config.APP_NAME:
     title: Gitea Display Name
     description: This name will displayed on Gitea homepage.
@@ -871,8 +1013,20 @@ properties:
     type: string
     default: "gitea@test.com"
     pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$'
+  gitea.memcached.replicas:
+    title: Memcached [Gitea] Replica Count
+    description: Number of replicas to deploy for Memcached [Gitea].
+    type: integer
+    default: 3
+    min: 1
+  gitea.postgresql.replicas:
+    title: PostgreSQL [Gitea] Replica Count
+    description: Number of replicas to deploy for PostgreSQL [Gitea].
+    type: integer
+    default: 3
+    min: 1
   gitea.postgresql.password:
-    title: (Gitea) PostgreSQL Gitea user password
+    title: PostgreSQL [Gitea] Gitea user password
     description: Password to use for PostgreSQL Gitea user.
     type: string
     x-google-marketplace:

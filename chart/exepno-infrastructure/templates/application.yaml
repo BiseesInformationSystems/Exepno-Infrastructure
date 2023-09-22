@@ -34,6 +34,9 @@ spec:
       - description: Exepno Infrastructure Homepage
         url: https://bisees.com/ExepnoInfrastructure/index.html
   info:
+    - name: Ingress Public IP
+      type: Value
+      value: {{ getHostByName .Values.ingress.grafana_host }}
     - name: Grafana URL
       type: Value
       value: https://{{ .Values.ingress.grafana_host }}

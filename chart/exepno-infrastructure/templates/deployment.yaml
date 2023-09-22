@@ -1,3 +1,4 @@
+{{- $reportingSecret := required "Please provide Reporting Secret using --set reportingSecret=<secret_name>" .Values.reportingSecret -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +24,7 @@ spec:
             secretName: {{ include "exepno-infrastructure.fullname" . }}
         - name: report
           secret:
-            secretName: {{ .Values.reportingSecret }}
+            secretName: {{ $reportingSecret }}
         - name: ubbagent-config
           configMap:
             name: {{ include "exepno-infrastructure.fullname" . }}
@@ -51,7 +52,7 @@ spec:
                 - bash
                 - -c
                 - cat /apps/finished
-            initialDelaySeconds: 900
+            initialDelaySeconds: 600
             failureThreshold: 30
             periodSeconds: 30
           readinessProbe:
@@ -73,12 +74,12 @@ spec:
           - name: AGENT_ENCODED_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.reportingSecret }}
+                name: {{ $reportingSecret }}
                 key: reporting-key
           - name: AGENT_CONSUMER_ID
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.reportingSecret }}
+                name: {{ $reportingSecret }}
                 key: consumer-id
           volumeMounts:
           - name: ubbagent-config
