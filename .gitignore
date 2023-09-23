@@ -4,3 +4,4 @@ exepno/
 images/
 venv/
 .vscode/
+reporting_secret.yaml

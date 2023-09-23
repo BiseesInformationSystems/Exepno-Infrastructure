@@ -1,7 +1,7 @@
 from os import name as osname
 from os.path import abspath
 from re import match
-from json import dumps, loads
+from json import loads
 from argparse import ArgumentParser, Namespace
 import pulumi_gcp as gcp
 from pulumi.automation import create_or_select_stack, fully_qualified_stack_name, LocalWorkspaceOptions, ProjectSettings, ConfigValue
@@ -713,8 +713,11 @@ def main():
     print("Result:", res.summary.result)
     res_json = loads(f'{res.outputs}'.replace('\'', '\"'))
     print("Outputs:")
-    for k, v in res_json.items():
-      print(f'\t{k:<30}: {v:<10}')
+    with open('exepno_infrastructure_outputs.txt', 'w') as file:
+      for k, v in res_json.items():
+        print(f'\t{k:<30}: {v:<10}')
+        file.write(f'{k:<30}: {v:<10}\n')
+    print("\nAbove outputs have also been written to 'exepno_infrastructure_outputs.txt' file for future reference.")
 
   elif args.func == "delete":
     print("\nDeleting Exepno Infrastructure...")
