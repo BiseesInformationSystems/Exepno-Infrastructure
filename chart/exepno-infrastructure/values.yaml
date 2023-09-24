@@ -153,7 +153,6 @@ argocd:
     replicas: 3
 
 nfs:
-  replicaCount: 3
   image:
     repository: gcr.io/bisees-public/exepno-infrastructure/nfs-provisioner
     tag: 1.0.0
@@ -239,7 +238,6 @@ jira:
   replicaCount: 3
   global:
     postgresql:
-      replicas: 3
       auth:
         password: ""
         postgresPassword: ""
@@ -321,7 +319,6 @@ gitea:
     password: ""
     email: "gitea@test.com"
   postgresql:
-    replicas: 3
     password: ""
     image:
       registry: gcr.io

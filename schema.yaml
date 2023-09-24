@@ -596,12 +596,6 @@ properties:
     min: 1
 
   # nfs-server-provisioner properties
-  nfs.replicaCount:
-    title: NFS Server Replica Count
-    description: Number of NFS Server pods to deploy.
-    type: integer
-    default: 3
-    min: 1
   nfs.persistence.storageClass:
     title: Storage Class for NFS Server PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for NFS Server.
@@ -815,12 +809,6 @@ properties:
     min: 1
 
   # jira-postgresql properties
-  jira.global.postgresql.replicas:
-    title: PostgreSQL [Jira] Replica Count
-    description: Number of PostgreSQL [Jira] pods to deploy.
-    type: integer
-    default: 3
-    min: 1
   jira.global.postgresql.auth.password:
     title: PostgreSQL [Jira] Jira user password
     description: Password to use for PostgreSQL Jira user.
@@ -1016,12 +1004,6 @@ properties:
   gitea.memcached.replicas:
     title: Memcached [Gitea] Replica Count
     description: Number of replicas to deploy for Memcached [Gitea].
-    type: integer
-    default: 3
-    min: 1
-  gitea.postgresql.replicas:
-    title: PostgreSQL [Gitea] Replica Count
-    description: Number of replicas to deploy for PostgreSQL [Gitea].
     type: integer
     default: 3
     min: 1
