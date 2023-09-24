@@ -374,7 +374,7 @@ properties:
     description: Number of nodes in AlertManager cluster.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   monitoring.alertmanager.alertmanagerSpec.storage.storageClassName:
     title: Storage Class for Alertmanager PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Alertmanager.
@@ -394,7 +394,7 @@ properties:
     description: Number of Prometheus pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   monitoring.prometheus.prometheusSpec.storageSpec.storageClassName:
     title: Storage Class for Prometheus PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Prometheus.
@@ -414,7 +414,7 @@ properties:
     description: Number of KubeStateMetrics pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   ingress.grafana_host:
     title: Grafana Ingress Hostname
     description: Domain name to use for Grafana.
@@ -426,7 +426,7 @@ properties:
     description: Number of Grafana pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   monitoring.grafana.adminPassword:
     title: Grafana Admin user's password
     description: Password to use for Grafana Admin user.
@@ -485,7 +485,7 @@ properties:
     description: Number of PostgreSQL pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   postgresql.global.postgresql.persistence.storageClass:
     title: Storage Class for PostgreSQL Database PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for PostgreSQL Database.
@@ -575,25 +575,25 @@ properties:
     description: Number of ArgoCD Server pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   argocd.controller.replicas:
     title: ArgoCD Controller Replica Count
     description: Number of ArgoCD Controller pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   argocd.repoServer.replicas:
     title: ArgoCD RepoServer Replica Count
     description: Number of ArgoCD RepoServer pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   argocd.applicationSet.replicas:
     title: ArgoCD ApplicationSet Replica Count
     description: Number of ArgoCD ApplicationSet pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
 
   # nfs-server-provisioner properties
   nfs.persistence.storageClass:
@@ -682,25 +682,25 @@ properties:
     description: Number of Airflow Scheduler pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   openmetadataDependencies.airflow.web.replicas:
     title: Airflow Web Replica Count
     description: Number of Airflow Web pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   openmetadataDependencies.airflow.triggerer.replicas:
     title: Airflow Triggerer Replica Count
     description: Number of Airflow Triggerer pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   openmetadataDependencies.mysql.replicaCount:
     title: MySQL [Airflow] Replica Count
     description: Number of MySQL [Airflow] pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   openmetadataDependencies.mysql.auth.rootPassword:
     title: MySQL [Airflow] Root user password
     description: Password to use for MySQL [Airflow] Root user.
@@ -729,7 +729,7 @@ properties:
     description: Number of Elasticsearch [OpenMetadata] pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   openmetadataDependencies.elasticsearch.persistence.storageClassName:
     title: Storage Class for Elasticsearch [OpenMetadata] PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
@@ -766,7 +766,7 @@ properties:
     description: Number of OpenMetadata pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
 
   # elastic-stack properties
   eck.operator.replicaCount:
@@ -774,13 +774,13 @@ properties:
     description: Number of ECK Operator pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   eck.elasticsearch.count:
     title: Elasticsearch Nodes Count
     description: Number of nodes in Elasticsearch cluster.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   eck.elasticsearch.persistence.storageClassName:
     title: Storage Class for Elasticsearch PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Elasticsearch.
@@ -806,7 +806,7 @@ properties:
     description: Number of Kibana pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
 
   # jira-postgresql properties
   jira.global.postgresql.auth.password:
@@ -854,7 +854,7 @@ properties:
     description: Number of replicas to deploy for Jira.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   jira.persistence.storageClassName:
     title: Storage Class for Jira PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Jira.
@@ -882,7 +882,7 @@ properties:
     description: Number of PostgreSQL [Confluence] pods to deploy.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   confluence.global.postgresql.auth.password:
     title: PostgreSQL [Confluence] Confluence user password
     description: Password to use for PostgreSQL Confluence user.
@@ -928,13 +928,13 @@ properties:
     description: Number of replicas to deploy for Confluence.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   confluence.synchrony.replicaCount:
     title: Confluence Synchrony Replica Count
     description: Number of replicas to deploy for Confluence Synchrony.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   confluence.persistence.storageClassName:
     title: Storage Class for Confluence PersistentVolumeClaim
     description: Storage Class to use for provisioning Persistent Volumes for Confluence.
@@ -974,7 +974,7 @@ properties:
     description: Number of replicas to deploy for Gitea.
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   gitea.config.APP_NAME:
     title: Gitea Display Name
     description: This name will displayed on Gitea homepage.
@@ -1006,7 +1006,7 @@ properties:
     description: Number of replicas to deploy for Memcached [Gitea].
     type: integer
     default: 3
-    min: 1
+    minimum: 1
   gitea.postgresql.password:
     title: PostgreSQL [Gitea] Gitea user password
     description: Password to use for PostgreSQL Gitea user.
